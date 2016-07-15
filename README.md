@@ -1,5 +1,23 @@
 # BufferedImageProcessing
-A collection of custom implementations of java.awt.image.BufferedImage with support for image processing and simplified direct access to image data.
+A collection of custom java.awt.image.BufferedImage implementations with support for image processing and simplified direct access to the image's data.
+
+In Short
+--------
+
+Conveniently manipulate images like this ...
+
+
+	//load an image and convert it into an PixelBufferedImage
+	//and set the center pixel to green
+	PixelBufferedImage i = new PixelBufferedImage( ImageIO.read( ... ) );
+	i.pixels[ i.width/2 + i.height/2 * j.scan ] = 0xFF00FF00; 
+	
+	//convert it to YUV color space and stretch the Y component a bit
+	YUVBufferedImage j = new YUVBufferedImage( i );
+	j.Y.sub(25).mul(1.1);
+	
+	//store it back
+	ImageIO.write( j, "png", ... );
 
 
 Release
