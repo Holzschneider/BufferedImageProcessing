@@ -32,8 +32,8 @@ To add a dependency on *BufferedImageProcessing* using maven, modify your *repos
 	<repositories>
 	 ...
 	  <repository>
-	    <id>git-holzschneider</id>
-	    <name>Holzschneider's Git based repo</name>
+	    <id>Buffered-Processing-Repository</id>
+	    <name>BufferedProcessing's Git-based repo</name>
 	    <url>https://raw.githubusercontent.com/Holzschneider/BufferedImageProcessing/deploy/</url>
 	  </repository>
 	...
@@ -63,6 +63,6 @@ To add the repository and the dependency using gradle refer to this
 and this
 
 	dependencies {
-	  compile 'de.dualuse.commons:BufferedImageProcessing:1.0'
+	  compile 'de.dualuse.commons:BufferedImageProcessing:1.0.+'
 	}
 
