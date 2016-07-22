@@ -4,14 +4,14 @@
 git clone -b deploy https://${GH_TOKEN}@github.com/${GH_ACCOUNT}/${GH_REPOSITORY} $HOME/deploy
 
 #'convert' the repository to look like a local repository
-find $HOME/deploy -name "maven-metadata.xml" -exec mv {} $(dirname {})/maven-metadata-local.xml \;
+find $HOME/deploy -name "maven-metadata.xml" -exec echo mv {} $(dirname {})/maven-metadata-local.xml \;
 
 #use maven to package and install the artifact in the repository 
 mvn package
 mvn install:install-file -DpomFile=pom.xml -Dfile=$(ls target/*.jar) -DlocalRepositoryPath=$HOME/deploy
 
 #'convert' the repository back to be a maven repository
-find $HOME/deploy -name "maven-metadata-local.xml" -exec mv {} $(dirname {})/maven-metadata.xml \;
+find $HOME/deploy -name "maven-metadata-local.xml" -exec echo mv {} $(dirname {})/maven-metadata.xml \;
 
 #commit and push the changes to the deploy branch
 cd $HOME/deploy
