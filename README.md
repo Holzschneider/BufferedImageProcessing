@@ -32,8 +32,8 @@ To add a dependency on *BufferedImageProcessing* using maven, modify your *repos
 	<repositories>
 	 ...
 	  <repository>
-	    <id>Buffered-Processing-Repository</id>
-	    <name>BufferedProcessing's Git-based repo</name>
+	    <id>BufferedImageProcessing-Repository</id>
+	    <name>BufferedImageProcessing's Git-based repo</name>
 	    <url>https://raw.githubusercontent.com/Holzschneider/BufferedImageProcessing/deploy/</url>
 	  </repository>
 	...
@@ -46,7 +46,7 @@ and modify your *dependencies* section to include the graphics3d dependency
 	  	<dependency>
 	  		<groupId>de.dualuse.commons</groupId>
 	  		<artifactId>BufferedImageProcessing</artifactId>
-	  		<version>LATEST</version>
+	  		<version>1.0.0</version>
 	  	</dependency>
 	  ...
 	  </dependencies>
