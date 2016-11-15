@@ -23,7 +23,7 @@ Conveniently manipulate images like this ...
 Release
 -------
 
-The base release 1.0.0 corresponds to the unmodified image processing implementation, as it's extracted from legacy projects.
+The base release 1.0.x corresponds to the unmodified image processing implementation, as it's extracted from legacy projects.
 
 
 As usual, releases are deployed automatically to the deploy branch of this github repostory. 
@@ -44,9 +44,9 @@ and modify your *dependencies* section to include the graphics3d dependency
 	  <dependencies>
 	  ...
 	  	<dependency>
-	  		<groupId>de.dualuse.commons</groupId>
+	  		<groupId>de.dualuse</groupId>
 	  		<artifactId>BufferedImageProcessing</artifactId>
-	  		<version>1.0.0</version>
+	  		<version>LATEST</version>
 	  	</dependency>
 	  ...
 	  </dependencies>
@@ -63,6 +63,6 @@ To add the repository and the dependency using gradle refer to this
 and this
 
 	dependencies {
-	  compile 'de.dualuse.commons:BufferedImageProcessing:1.0.+'
+	  compile 'de.dualuse:BufferedImageProcessing:1.0.+'
 	}
 
