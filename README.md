@@ -39,7 +39,7 @@ To add a dependency on *BufferedImageProcessing* using maven, modify your *repos
 	...
 	</repositories>
 	
-and modify your *dependencies* section to include the graphics3d dependency
+and modify your *dependencies* section to include the *BufferedImageProcessing* dependency
  
 	  <dependencies>
 	  ...
