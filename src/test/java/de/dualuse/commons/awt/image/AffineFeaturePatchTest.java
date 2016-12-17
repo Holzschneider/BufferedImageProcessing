@@ -50,31 +50,45 @@ public class AffineFeaturePatchTest {
 				super.paintCanvas(g);
 				int size = afp.radius*2+1;
 				
-				
-				int ip[] = afp.I.clone();
-				int jp[] = afp.J.clone();
-				
-				int highest = 0;
-				
-				for (int o=0;o<ip.length;o++)
-					highest = max (highest, afp.weights[o]);
-				
-				System.out.println(highest);
-
-				for (int o=0;o<jp.length;o++) {
-					int ja = 255*afp.weights[o]/highest;
-					int ia = 255*afp.weights[o]/highest;
+				if ((page%2)==1) {
+					int ip[] = afp.I.clone();
+					int jp[] = afp.J.clone();
 					
-					jp[o] = jp[o]|(jp[o]<<8)|(jp[o]<<16)|(ja<<24);
-					ip[o] = ip[o]|(ip[o]<<8)|(ip[o]<<16)|(ia<<24);
+					int highest = 0;
 					
+					for (int o=0;o<ip.length;o++)
+						highest = max (highest, afp.weights[o]);
+					
+					System.out.println(highest);
+	
+					for (int o=0;o<jp.length;o++) {
+						int ja = 255*afp.weights[o]/highest;
+						int ia = 255*afp.weights[o]/highest;
+						
+						jp[o] = jp[o]|(jp[o]<<8)|(jp[o]<<16)|(ja<<24);
+						ip[o] = ip[o]|(ip[o]<<8)|(ip[o]<<16)|(ia<<24);
+						
+					}
+	
+	
+					g.drawImage(new PixelBufferedImage(size, size, ip, 0, size, BufferedImage.TYPE_INT_ARGB), 0, 0, this);
+					g.drawImage(new PixelBufferedImage(size, size, jp, 0, size, BufferedImage.TYPE_INT_ARGB), 0, size+1, this);
+				} else {
+					g.drawImage(new LumaBufferedImage(size, size, afp.I, 0, size), 0, 0, this);
+					g.drawImage(new LumaBufferedImage(size, size, afp.J, 0, size), 0, size+1, this);
 				}
-
-
-				g.drawImage(new PixelBufferedImage(size, size, ip, 0, size, BufferedImage.TYPE_INT_ARGB), 0, 0, this);
-				g.drawImage(new PixelBufferedImage(size, size, jp, 0, size, BufferedImage.TYPE_INT_ARGB), 0, size+1, this);
-
 			}
+
+			int page = 0;
+			
+			MouseAdapter ma = new MouseAdapter() {
+				{ addMouseListener(this); }
+				
+				public void mouseClicked(MouseEvent e) {
+					page ++;
+					repaint();
+				}
+			};
 		});
 		h.setBounds(1000, 100, 400, 400);
 		h.setVisible(true);
