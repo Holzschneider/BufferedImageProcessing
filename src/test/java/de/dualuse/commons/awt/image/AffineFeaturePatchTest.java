@@ -2,10 +2,7 @@ package de.dualuse.commons.awt.image;
 
 import static java.lang.Math.*;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -31,7 +28,7 @@ public class AffineFeaturePatchTest {
 	public static void main(String[] args) throws IOException {
 		
 		final BufferedImage bi = ImageIO.read( AffineFeaturePatchTest.class.getResource("frame_0088.jpg") );
-		final BufferedImage bj = ImageIO.read( AffineFeaturePatchTest.class.getResource("frame_0089.jpg") );
+		final BufferedImage bj = ImageIO.read( AffineFeaturePatchTest.class.getResource("frame_0089-rotated2.jpg") );
 //		final BufferedImage bi = ImageIO.read( FeaturePatchTest.class.getResource("frame-001280.jpg") );
 //		final BufferedImage bj = ImageIO.read( FeaturePatchTest.class.getResource("frame-001281.jpg") );
 		PixelBufferedImage pbi = new PixelBufferedImage(bi);
@@ -147,6 +144,11 @@ public class AffineFeaturePatchTest {
 				case 0:	g2.drawImage(bi, 0, 0, this); break; 
 				case 1:	g2.drawImage(bj, 0, 0, this); break; 
 				}
+				
+//				g2.setComposite(AlphaComposite.SrcOver.derive(0.5f));
+//				
+//				g2.drawImage(bi, 0, 0, this); 
+//				g2.drawImage(bj, 0, 0, this); 
 	
 
 				
@@ -176,7 +178,7 @@ public class AffineFeaturePatchTest {
 					.track(	from, lbi.width, lbi.height, lbi.pixels, lbi.offset, lbi.scan, 
 							to  , lbj.width, lbj.height, lbj.pixels, lbj.offset, lbj.scan );
 				
-//					to.preConcatenate(afp.pt);
+					to.concatenate(afp.pt);
 					to.concatenate(afp.pt);
 					g3.draw( to.createTransformedShape( new Rectangle2D.Double(-afp.radius, -afp.radius,2* afp.radius, 2*afp.radius) ) );
 				}
