@@ -11,12 +11,23 @@
 			<name>Swinger's Git-based repo</name>
 			<url>https://raw.githubusercontent.com/Holzschneider/Swinger/deploy/</url>
 		</repository>
+		<repository>
+			<id>Fancy-Repository</id>
+			<name>Fancy's Git-based repo</name>
+			<url>https://raw.githubusercontent.com/Holzschneider/Fancy/deploy/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>de.dualuse</groupId>
 			<artifactId>Swinger</artifactId>
+			<version>[1,)</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.dualuse</groupId>
+			<artifactId>Fancy</artifactId>
 			<version>[1,)</version>
 			<scope>test</scope>
 		</dependency>
