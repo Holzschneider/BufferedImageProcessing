@@ -114,7 +114,7 @@ public class AffineFeaturePatch extends FeaturePatch {
 		Arrays.fill(z, 0);
 		decompose(6, T, L, U);
 		solve(6, L, U, a, z);
-//		
+		
 //		System.out.println( (long)T[4][4]+" "+(long)T[4][5]+" * tx =  "+(long)a[4]);
 //		System.out.println( (long)T[5][4]+" "+(long)T[5][5]+" * ty =  "+(long)a[5]);
 //		System.out.println( " vs ");

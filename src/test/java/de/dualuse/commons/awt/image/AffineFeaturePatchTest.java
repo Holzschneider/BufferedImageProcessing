@@ -2,7 +2,10 @@ package de.dualuse.commons.awt.image;
 
 import static java.lang.Math.*;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -28,7 +31,7 @@ public class AffineFeaturePatchTest {
 	public static void main(String[] args) throws IOException {
 		
 		final BufferedImage bi = ImageIO.read( AffineFeaturePatchTest.class.getResource("frame_0088.jpg") );
-		final BufferedImage bj = ImageIO.read( AffineFeaturePatchTest.class.getResource("frame_0089-rotated2.jpg") );
+		final BufferedImage bj = ImageIO.read( AffineFeaturePatchTest.class.getResource("frame_0089-sheared2.jpg") );
 //		final BufferedImage bi = ImageIO.read( FeaturePatchTest.class.getResource("frame-001280.jpg") );
 //		final BufferedImage bj = ImageIO.read( FeaturePatchTest.class.getResource("frame-001281.jpg") );
 		PixelBufferedImage pbi = new PixelBufferedImage(bi);
@@ -47,8 +50,30 @@ public class AffineFeaturePatchTest {
 				super.paintCanvas(g);
 				int size = afp.radius*2+1;
 				
-				g.drawImage(new IntBufferedImage(size, size, afp.I, 0, size), 0, 0, this);
-				g.drawImage(new IntBufferedImage(size, size, afp.J, 0, size), 0, size+1, this);
+				
+				int ip[] = afp.I.clone();
+				int jp[] = afp.J.clone();
+				
+				int highest = 0;
+				
+				for (int o=0;o<ip.length;o++)
+					highest = max (highest, afp.weights[o]);
+				
+				System.out.println(highest);
+
+				for (int o=0;o<jp.length;o++) {
+					int ja = 255*afp.weights[o]/highest;
+					int ia = 255*afp.weights[o]/highest;
+					
+					jp[o] = jp[o]|(jp[o]<<8)|(jp[o]<<16)|(ja<<24);
+					ip[o] = ip[o]|(ip[o]<<8)|(ip[o]<<16)|(ia<<24);
+					
+				}
+
+
+				g.drawImage(new PixelBufferedImage(size, size, ip, 0, size, BufferedImage.TYPE_INT_ARGB), 0, 0, this);
+				g.drawImage(new PixelBufferedImage(size, size, jp, 0, size, BufferedImage.TYPE_INT_ARGB), 0, size+1, this);
+
 			}
 		});
 		h.setBounds(1000, 100, 400, 400);
