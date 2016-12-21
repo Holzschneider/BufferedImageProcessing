@@ -7,13 +7,16 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -24,6 +27,8 @@ import javax.swing.event.ChangeListener;
 
 import de.dualuse.commons.Hints;
 import de.dualuse.commons.awt.Graphics3D;
+import de.dualuse.commons.awt.dnd.DropListener;
+import de.dualuse.commons.awt.dnd.FileDropTarget;
 import de.dualuse.commons.swing.JKnob;
 import de.dualuse.commons.swing.JMicroscope;
 import de.dualuse.commons.util.Sticky;
@@ -94,21 +99,28 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 	////////////////
 	
 	
+
+	static Sticky<URL> source = new Sticky<URL>( AffineFeaturePatchTest2.class.getResource("frame_0088.jpg") );
+	static Sticky<URL> probed = new Sticky<URL>( AffineFeaturePatchTest2.class.getResource("frame_0089-sheared2.jpg") );
 	
 	static Sticky<Double> radius = new Sticky<Double>( 16. );
 	static AffineFeaturePatch afp = new AffineFeaturePatch(radius.get().intValue());
- 
+	
+	static BufferedImage bi, bj;
+	static PixelBufferedImage pbi, pbj;
+	static LumaBufferedImage lbi, lbj;
+	
+	
 	public static void main(String[] args) throws IOException {
 		
-		final BufferedImage bi = ImageIO.read( AffineFeaturePatchTest2.class.getResource("frame_0088.jpg") );
-		final BufferedImage bj = ImageIO.read( AffineFeaturePatchTest2.class.getResource("frame_0089-sheared2.jpg") );
-//		final BufferedImage bi = ImageIO.read( FeaturePatchTest.class.getResource("frame-001280.jpg") );
-//		final BufferedImage bj = ImageIO.read( FeaturePatchTest.class.getResource("frame-001281.jpg") );
-		PixelBufferedImage pbi = new PixelBufferedImage(bi);
-		PixelBufferedImage pbj = new PixelBufferedImage(bj);
+		bi = ImageIO.read( source.get() );
+		bj = ImageIO.read( probed.get() );
 		
-		final LumaBufferedImage lbi = new LumaBufferedImage(pbi);	
-		final LumaBufferedImage lbj = new LumaBufferedImage(pbj);	
+		pbi = new PixelBufferedImage(bi);
+		pbj = new PixelBufferedImage(bj);
+		
+		lbi = new LumaBufferedImage(pbi);	
+		lbj = new LumaBufferedImage(pbj);	
 		
 		
 		////////
@@ -128,7 +140,7 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 				
 				synchronized(trail) {
 					trail.clear();
-					for (int i=0;i<20;i++) {
+					for (int i=0;i<3*20;i++) {
 						afp
 						.reset()
 						.track(	from, lbi.width, lbi.height, lbi.pixels, lbi.offset, lbi.scan, 
@@ -145,7 +157,7 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 		}; 
 		
 		final JFrame h = (new JFrame());
-		h.setContentPane(new JMicroscope(new Sticky<AffineTransform>(new AffineTransform()).get()) {
+		h.setContentPane(new JMicroscope(new Sticky<AffineTransform>(new AffineTransform()).get()) {			
 			private static final long serialVersionUID = 1L;
 			public void paintCanvas(Graphics g) {
 				super.paintCanvas(g);
@@ -203,6 +215,28 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 		
 		g.setContentPane(new AffineFeaturePatchTest2(Sticky.value(new AffineTransform())) {
 			
+			FileDropTarget ftd = new FileDropTarget(this, new DropListener<File[]>() {
+				public boolean drop(Point p, File[] f) throws Exception {
+					
+					try {
+						URL u = f[0].toURI().toURL();
+						
+						bj = ImageIO.read(u);
+						pbj = new PixelBufferedImage(bj);
+						lbj = new LumaBufferedImage(pbj);
+						
+						probed.set(u);
+
+						return true;
+					} catch (IOException ex) {
+						ex.printStackTrace();
+						return false;
+					}
+					
+				}
+			} );
+
+			
 			JSlider progress = new JSlider(JSlider.VERTICAL, 0, 100, 100);
 			JSlider alpha = new JSlider(JSlider.VERTICAL, 0, 100, 100);
 			
@@ -226,7 +260,6 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 				alpha.setBounds(progress.getPreferredSize().width, 0, progress.getPreferredSize().width, getHeight());				
 			}
 			
-			Ellipse2D.Double e= new Ellipse2D.Double();
 			public void paintCanvas(Graphics g) {
 				Graphics2D g2 = ((Graphics2D)g.create());
 				g2.setRenderingHints(Hints.SMOOTH);
@@ -293,6 +326,27 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 		
 		f.setContentPane(new AffineFeaturePatchTest2(Sticky.value(new AffineTransform())) {
 			private static final long serialVersionUID = 1L;		
+
+			FileDropTarget ftd = new FileDropTarget(this, new DropListener<File[]>() {
+				public boolean drop(Point p, File[] f) throws Exception {
+					
+					try {
+						URL u = f[0].toURI().toURL();
+						bi = ImageIO.read(u);
+						pbi = new PixelBufferedImage(bi);
+						lbi = new LumaBufferedImage(pbi);
+						
+						source.set(u);
+						
+						repaint();
+						return true;
+					} catch (IOException ex) {
+						ex.printStackTrace();
+						return false;
+					}
+					
+				}
+			} );
 			
 			
 			Ellipse2D.Double e= new Ellipse2D.Double();
