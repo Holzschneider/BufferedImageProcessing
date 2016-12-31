@@ -65,7 +65,7 @@ public class AffineFeaturePatch extends FeaturePatch {
 	protected void computeAffine(int[] I, int[] J) {
 		final int s = radius*2+1;
 		
-		System.out.println("miep");
+//		System.out.println("miep");
 		//accumulate matrix coefficients
 		final int start = -radius+1, end = radius, r = s-(end-start);
 		
@@ -83,7 +83,6 @@ public class AffineFeaturePatch extends FeaturePatch {
 //				final int gx = (J[ o+1 ]-J[ o-1 ]); //gx/gy as in original paper 1993
 //				final int gy = (J[ o+s ]-J[ o-s ]);
 
-				
 				float weight = weights[o];
 
 				z[0] = x*gx;

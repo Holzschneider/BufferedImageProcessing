@@ -91,9 +91,9 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 		a.setColor(Color.GREEN);
 		b.setColor(Color.BLUE);
 		
-		add(c); 
-		add(a);
-		add(b);
+//		add(c); 
+//		add(a);
+//		add(b);
 	}
 	
 	////////////////
@@ -140,7 +140,7 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 				
 				synchronized(trail) {
 					trail.clear();
-					for (int i=0;i<3*20;i++) {
+					for (int i=0;i<3*20;i++) try {
 						afp
 						.reset()
 						.track(	from, lbi.width, lbi.height, lbi.pixels, lbi.offset, lbi.scan, 
@@ -149,6 +149,9 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 						over.concatenate(afp.pt);
 						over.concatenate(afp.pt);
 						trail.add(new AffineTransform(over));
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						break;
 					}
 					done.setTransform(over);
 				}
@@ -271,8 +274,8 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 				
 				g3.setStroke(new BasicStroke((float)(1.0/canvasTransform.getScaleX())));
 
-				g3.draw(new Line2D.Double(c.getCenterX(), c.getCenterY(), a.getCenterX(), a.getCenterY()));
-				g3.draw(new Line2D.Double(c.getCenterX(), c.getCenterY(), b.getCenterX(), b.getCenterY()));
+//				g3.draw(new Line2D.Double(c.getCenterX(), c.getCenterY(), a.getCenterX(), a.getCenterY()));
+//				g3.draw(new Line2D.Double(c.getCenterX(), c.getCenterY(), b.getCenterX(), b.getCenterY()));
 				g3.setColor(Color.ORANGE);
 				
 				to.setTransform(
