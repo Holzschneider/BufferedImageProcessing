@@ -7,9 +7,9 @@
 	<name>BufferedImage Processing Library</name>
 	<repositories>
 		<repository>
-			<id>Swinger-Repository</id>
-			<name>Swinger's Git-based repo</name>
-			<url>https://raw.githubusercontent.com/Holzschneider/Swinger/deploy/</url>
+			<id>dualuse repository</id>
+			<name>dualuse's git based repo</name>
+			<url>https://dualuse.github.io/maven/</url>
 		</repository>
 	</repositories>
 
@@ -23,6 +23,8 @@
 	</dependencies>
 
 	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<version>3.5.1</version>
