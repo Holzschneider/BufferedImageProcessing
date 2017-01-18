@@ -13,6 +13,6 @@ after_success:
  
 env:
   global:
-    - GH_ACCOUNT=Holzschneider
-    - GH_REPOSITORY=BufferedImageProcessing
+    - GH_ACCOUNT=dualuse
+    - GH_REPOSITORY=maven
     - secure: "oooFUMnGz8ixUyZV+ZSIftgHNmVABadPPEPELlXIkBy4kvETHMdZNy4oxpzk2XqelkKvQ98Ar5kgi0G9roIHgM8txcGoeQH6k42Yi8wukQTJF7TiRjtrqLuGTBXn6rTNyuG8UK3VnUfn9A1jkVu3dLxcQd5m/eeMpxKbLuP4qmV/Bfa4LIYnqySI+BHO99v8/IRtGIb1ZtAEEWTopEFVtgWz5UfadZQNMYrr6pqRO+PwV1MiuJV+wYZeXovgJ2QXYioOxdwoZ1wmpix1jRc7csT6R7E5XNrcg2RfrCKKKiRSBBmYz2X5n1EAIoCB0o9sJa0cz6Ika5DlygrJ0HwSDD9hO3dS/noMcuuqajgeAKMmw+4SRjyJ354RKVawxrlqRCbysaDwT+TOjsCsV7qmQEq6r+z55jZxiV7+8ew67kFslXG2Vxc8f/mDJL1KIUEaAtHo89RUoOjh8/oqmeXsP2YzxpiZy0MKKcKlFwRTJjXUzVEcmMK+oEGSJtabyjndbusjP37fRCj+srAUToGkjfBtvhmPmC/izv+mmhBy88MSbmMyoVTgKXr6wvZiXDEAJss5Pgg74/qQpvt3i5GZyeU8fJF7fMWqQbqRbny41gcIlU0hMRGGbVZQePmk+8ipZB2BjA3dt7rOFbQE+Efv71JJB7lxm9UA0sdPFJXr0ws="
