@@ -162,8 +162,8 @@ public class AffineFeaturePatchDebug {
 						to, lbj.width, lbj.height, lbj.pixels, lbj.offset, lbj.scan);
 				
 				
-				
 				g3.dispose();
+				repaint(100);
 			}
 			
 			
