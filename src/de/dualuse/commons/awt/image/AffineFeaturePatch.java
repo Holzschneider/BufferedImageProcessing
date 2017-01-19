@@ -51,8 +51,7 @@ public class AffineFeaturePatch extends FeaturePatch {
 		
 		computeAffine(I, J);
 		
-		
-		return this;
+				return this;
 	}
 	
 	
@@ -133,7 +132,6 @@ public class AffineFeaturePatch extends FeaturePatch {
 	}
 	
 	
-
 	public static void grab(
 			AffineTransform from, int w, int h,
 			int clipWidth, int clipHeight, int[] pixels, int off, int scan, 
@@ -142,28 +140,28 @@ public class AffineFeaturePatch extends FeaturePatch {
 
 		AffineTransform i = from;
 		
-//		double m00 = i.getScaleX(), m01 = i.getShearX(), m02 = i.getTranslateX();
-//		double m10 = i.getScaleY(), m11 = i.getShearY(), m12 = i.getTranslateY();
+		float m00 = (float)i.getScaleX(), m01 = (float) i.getShearX(), m02 = (float) i.getTranslateX();
+		float m10 = (float) i.getShearY(), m11 = (float) i.getScaleY(), m12 = (float) i.getTranslateY();
 		
+		final int rx = w/2, ry = h/2;
 		
-		int rx = w/2, ry = h/2;
+		float x0 = -rx*m00+-ry*m01+m02;
+		float y0 = -rx*m10+-ry*m11+m12;
+		float _x = x0, _y = y0;
 		
-		
-		for (int y=-ry,o=0;y<=ry;y++)
-			for (int x=-rx;x<=rx;x++,o++) {
-				Point2D p = i.transform(new Point2D.Double(x,y), new Point2D.Double());
-				
-				int x_ = (int) p.getX(), y_ = (int) p.getY();
-				double xr = p.getX()-x_, yr = p.getY()-y_;
+		for (int y=-ry,o=0;y<=ry;y++, _x=x0+=m01, _y=y0+=m11)
+			for (int x=-rx;x<=rx;x++,o++,_x+=m00,_y+=m10) {
+				int x_ = (int)(_x), y_ = (int)(_y);
+				float xr = _x-x_, yr = _y-y_;
 				
 				int O = x_+y_*scan+off;
 				int ul = pixels[O]     , ur = pixels[O+1];
 				int ll = pixels[O+scan], lr = pixels[O+1+scan];
 
-				double u = ul*(1-xr)+ur*xr;
-				double l = ll*(1-xr)+lr*xr;
+				float u = ul*(1-xr)+ur*xr;
+				float l = ll*(1-xr)+lr*xr;
 				
-				double c = u*(1-yr)+l*yr;				
+				float c = u*(1-yr)+l*yr;				
 								
 				to[o] = (int)c;
 			}
@@ -215,7 +213,6 @@ public class AffineFeaturePatch extends FeaturePatch {
 	    }
 	}
 	
-
 };
 
 

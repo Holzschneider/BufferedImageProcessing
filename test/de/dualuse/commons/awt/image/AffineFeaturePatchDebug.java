@@ -3,6 +3,7 @@ package de.dualuse.commons.awt.image;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -11,14 +12,17 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 
 import de.dualuse.commons.awt.Graphics3D;
 import de.dualuse.commons.swing.JKnob;
 import de.dualuse.commons.swing.JMicroscope;
 import de.dualuse.commons.util.Sticky;
+import de.dualuse.commons.util.Sticky.Retriever;
 
 import static java.lang.Math.*;
 
@@ -37,8 +41,18 @@ public class AffineFeaturePatchDebug {
 		
 		
 		
-		
 		final JFrame h = new JFrame();
+		
+		h.setBounds(0, 0, 200, 200);
+		h.setBounds(Sticky.value( new Retriever<Rectangle>() {
+			public Rectangle get() {
+				System.out.println("GET BOUNDS "+h.getBounds());
+				return h.getBounds();
+			}
+		} ));
+		
+		
+		
 		
 		h.setContentPane(new JMicroscope(Sticky.value(new AffineTransform())) {
 			private static final long serialVersionUID = 1L;
@@ -49,7 +63,6 @@ public class AffineFeaturePatchDebug {
 			}
 		});
 
-		h.setBounds(0, 0, 200, 200);
 		h.setVisible(true);
 		
 		
@@ -57,8 +70,6 @@ public class AffineFeaturePatchDebug {
 		
 		f.setContentPane(new JMicroscope(Sticky.value(new AffineTransform())) {
 			private static final long serialVersionUID = 1L;
-			
-			
 			
 			
 			JKnob c = new JKnob(Sticky.value(new Point2D.Double(100,100)));
