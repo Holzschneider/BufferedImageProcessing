@@ -65,7 +65,6 @@ public class AffineFeaturePatch extends FeaturePatch {
 	protected void computeAffine(int[] I, int[] J) {
 		final int s = radius*2+1;
 		
-//		System.out.println("miep");
 		//accumulate matrix coefficients
 		final int start = -radius+1, end = radius, r = s-(end-start);
 		
@@ -99,9 +98,9 @@ public class AffineFeaturePatch extends FeaturePatch {
 				for (int row=0;row<6;row++)
 					a[row] += delta*z[row]*weight;
 				
-				gxx += gx*gx*weight; //ok
-				gxy += gx*gy*weight; //ok //ok
-				gyy += gy*gy*weight; //ok
+				gxx += gx*gx*weight; 
+				gxy += gx*gy*weight; 
+				gyy += gy*gy*weight;
 				
  				egx += delta* gx * weight;
  				egy += delta* gy * weight; 
@@ -143,7 +142,12 @@ public class AffineFeaturePatch extends FeaturePatch {
 
 		AffineTransform i = from;
 		
+//		double m00 = i.getScaleX(), m01 = i.getShearX(), m02 = i.getTranslateX();
+//		double m10 = i.getScaleY(), m11 = i.getShearY(), m12 = i.getTranslateY();
+		
+		
 		int rx = w/2, ry = h/2;
+		
 		
 		for (int y=-ry,o=0;y<=ry;y++)
 			for (int x=-rx;x<=rx;x++,o++) {
