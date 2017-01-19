@@ -157,7 +157,7 @@ public class AffineFeaturePatchDebug {
 				g3.draw( from.createTransformedShape( new Rectangle2D.Double(-afp.radius, -afp.radius,2* afp.radius, 2*afp.radius) ) );
 				
 
-				afp.track(
+				afp.reset().track(
 						from, lbi.width, lbi.height, lbi.pixels, lbi.offset, lbi.scan, 
 						to, lbj.width, lbj.height, lbj.pixels, lbj.offset, lbj.scan);
 				

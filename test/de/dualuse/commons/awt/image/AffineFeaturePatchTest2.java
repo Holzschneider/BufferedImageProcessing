@@ -91,9 +91,9 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 		a.setColor(Color.GREEN);
 		b.setColor(Color.BLUE);
 		
-//		add(c); 
-//		add(a);
-//		add(b);
+		add(c); 
+		add(a);
+		add(b);
 	}
 	
 	////////////////
@@ -150,12 +150,11 @@ public class AffineFeaturePatchTest2 extends JMicroscope {
 						over.concatenate(afp.pt);
 						trail.add(new AffineTransform(over));
 					} catch (Exception ex) {
-						ex.printStackTrace();
+//							ex.printStackTrace();
 						break;
 					}
 					done.setTransform(over);
 				}
-				
 			}
 		}; 
 		

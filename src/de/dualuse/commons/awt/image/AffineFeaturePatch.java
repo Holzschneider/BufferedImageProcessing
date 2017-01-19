@@ -9,7 +9,11 @@ public class AffineFeaturePatch extends FeaturePatch {
 	public AffineFeaturePatch(int radius) {
 		super(radius);
 	}
-
+	
+	public AffineFeaturePatch(int radius, double sigma) {
+		super(radius,sigma);
+	}
+	
 
 //	protected long gxx = 0, gxy = 0, gyy = 0;
 //	protected long e = 0, n = 0;
@@ -58,6 +62,11 @@ public class AffineFeaturePatch extends FeaturePatch {
 	@Override
 	public AffineFeaturePatch reset() {
 		super.reset();
+		
+		for (int row=0;row<6;row++)
+			for (int col=0;col<6;col++)
+				a[row] = T[row][col] = 0;
+		
 		return this;		
 	}
 	
@@ -66,10 +75,6 @@ public class AffineFeaturePatch extends FeaturePatch {
 		
 		//accumulate matrix coefficients
 		final int start = -radius+1, end = radius, r = s-(end-start);
-		
-		for (int row=0;row<6;row++)
-			for (int col=0;col<6;col++)
-				a[row] = T[row][col] = 0;
 		
 		for (int y=start,o=1+s;y!=end;y++,o+=r)
 			for (int x=start;x!=end;x++,o++) {
@@ -112,20 +117,12 @@ public class AffineFeaturePatch extends FeaturePatch {
 		decompose(6, T, L, U);
 		solve(6, L, U, a, z);
 		
-//		System.out.println( (long)T[4][4]+" "+(long)T[4][5]+" * tx =  "+(long)a[4]);
-//		System.out.println( (long)T[5][4]+" "+(long)T[5][5]+" * ty =  "+(long)a[5]);
-//		System.out.println( " vs ");
-//		System.out.println( gxx+" "+gxy+" * tx =  "+egx);
-//		System.out.println( gxy+" "+gyy+" * ty =  "+egy);
 		
 		// solve 2x2 linear equation system using current coefficient's values 
 		float ooDet = 1f/(gxx * gyy - gxy * gxy);
 		translateX = (gyy * egx - gxy * egy) * ooDet;
 		translateY = (gxx * egy - gxy * egx) * ooDet;
 		
-		
-//		System.out.println("### "+translateX+", "+translateY+ " vs "+z[4]+", "+z[5]);
-//		pt.setTransform(1,0,0,1, translateX, translateY);
 		pt.setTransform(1+z[0],z[1],z[2],1+z[3], z[4], z[5]);
 		
 		error = e*1f/n;
