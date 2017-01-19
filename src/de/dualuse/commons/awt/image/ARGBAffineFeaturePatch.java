@@ -82,11 +82,11 @@ public class ARGBAffineFeaturePatch extends RGBAffineFeaturePatch {
 				final int O = (_x>>>FP)+(_y>>>FP)*scan+off;
 				final int ul = p[O]     , ur = p[O+1];
 				final int ll = p[O+scan], lr = p[O+1+scan];
-				
-				toB[o] = ((ul&0xFF)*omxr+(ur&0xFF)*xr*omyr+((ll&0xFF)*omxr+(lr&0xFF)*xr)*yr)>>>DP;
-				toG[o] = (((ul>>>8)&0xFF)*omxr+((ur>>>8)&0xFF)*xr*omyr+(((ll>>>8)&0xFF)*omxr+((lr>>>8)&0xFF)*xr)*yr)>>>DP;
-				toR[o] = (((ul>>>16)&0xFF)*omxr+((ur>>>16)&0xFF)*xr*omyr+(((ll>>>16)&0xFF)*omxr+((lr>>>16)&0xFF)*xr)*yr)>>>DP;
-				toA[o] = (((ul>>>24)&0xFF)*omxr+((ur>>>24)&0xFF)*xr*omyr+(((ll>>>24)&0xFF)*omxr+((lr>>>24)&0xFF)*xr)*yr)>>>DP;
+
+				toB[o] = (((ul&0xFF)*omxr+(ur&0xFF)*xr)*omyr+((ll&0xFF)*omxr+(lr&0xFF)*xr)*yr)>>>DP;
+				toG[o] = ((((ul>>>8)&0xFF)*omxr+((ur>>>8)&0xFF)*xr)*omyr+(((ll>>>8)&0xFF)*omxr+((lr>>>8)&0xFF)*xr)*yr)>>>DP;
+				toR[o] = ((((ul>>>16)&0xFF)*omxr+((ur>>>16)&0xFF)*xr)*omyr+(((ll>>>16)&0xFF)*omxr+((lr>>>16)&0xFF)*xr)*yr)>>>DP;
+				toA[o] = ((((ul>>>24)&0xFF)*omxr+((ur>>>24)&0xFF)*xr)*omyr+(((ll>>>24)&0xFF)*omxr+((lr>>>24)&0xFF)*xr)*yr)>>>DP;
 			}
 		
 	}

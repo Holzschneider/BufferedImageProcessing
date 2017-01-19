@@ -38,9 +38,6 @@ public class RGBAffineFeaturePatch extends AffineFeaturePatch {
 		grab(from, s, s, fromWidth, fromHeight, fromPixels, fromOffset, fromScan,  G, H, I);
 		grab(to, s, s, toWidth, toHeight, toPixels, toOffset, toScan,  J, K, L);
 
-		//grab pixel patches with sub-pixel accuracy to rI/gI/bI and rJ/gJ/bJ, and alpha-mask to weights
-//		grab(fromCenterX-radius, fromCenterY-radius, s, s, fromWidth, fromHeight, fromPixels, fromOffset, fromScan,  G, H, I );
-//		grab(toCenterX-radius, toCenterY-radius, s, s, toWidth, toHeight, toPixels, toOffset, toScan,  J, K, L );
 
 		//includes masked "weights"
 		computeAffine(G,J);
@@ -81,9 +78,10 @@ public class RGBAffineFeaturePatch extends AffineFeaturePatch {
 				final int ul = p[O]     , ur = p[O+1];
 				final int ll = p[O+scan], lr = p[O+1+scan];
 				
-				toB[o] = ((ul&0xFF)*omxr+(ur&0xFF)*xr*omyr+((ll&0xFF)*omxr+(lr&0xFF)*xr)*yr)>>>DP;
-				toG[o] = (((ul>>>8)&0xFF)*omxr+((ur>>>8)&0xFF)*xr*omyr+(((ll>>>8)&0xFF)*omxr+((lr>>>8)&0xFF)*xr)*yr)>>>DP;
-				toR[o] = (((ul>>>16)&0xFF)*omxr+((ur>>>16)&0xFF)*xr*omyr+(((ll>>>16)&0xFF)*omxr+((lr>>>16)&0xFF)*xr)*yr)>>>DP;
+
+				toB[o] = (((ul&0xFF)*omxr+(ur&0xFF)*xr)*omyr+((ll&0xFF)*omxr+(lr&0xFF)*xr)*yr)>>>DP;
+				toG[o] = ((((ul>>>8)&0xFF)*omxr+((ur>>>8)&0xFF)*xr)*omyr+(((ll>>>8)&0xFF)*omxr+((lr>>>8)&0xFF)*xr)*yr)>>>DP;
+				toR[o] = ((((ul>>>16)&0xFF)*omxr+((ur>>>16)&0xFF)*xr)*omyr+(((ll>>>16)&0xFF)*omxr+((lr>>>16)&0xFF)*xr)*yr)>>>DP;
 			}
 		
 	}

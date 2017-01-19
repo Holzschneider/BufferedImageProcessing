@@ -34,12 +34,14 @@ public class AffineFeaturePatch extends FeaturePatch {
 	protected long xygxy,  xygyy,   yygxy,   yygyy; 
 
 	
+	double S[][] = new double[6][6];
 	double T[][] = new double[6][6];
 	double L[][] = new double[6][6];
 	double U[][] = new double[6][6];
 	
 	double z[] = new double[6];
 	double a[] = new double[6];
+	double b[] = new double[6];
 	
 	AffineTransform pt = new AffineTransform();
 	
@@ -113,9 +115,16 @@ public class AffineFeaturePatch extends FeaturePatch {
 				e += delta*delta * weight;
 			}
 		
-		Arrays.fill(z, 0);
-		decompose(6, T, L, U);
-		solve(6, L, U, a, z);
+		
+		for (int row=0;row<6;row++)
+			for (int col=0;col<6;col++)
+				S[row][col] = T[row][col];
+		
+		for (int row=0;row<6;row++)
+			b[row] = a[row];
+		
+		decompose(6, S, L, U);
+		solve(6, L, U, b, z); // XXX Overwrites b!
 		
 		
 		// solve 2x2 linear equation system using current coefficient's values 
