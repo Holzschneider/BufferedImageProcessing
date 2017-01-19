@@ -22,7 +22,7 @@ import de.dualuse.commons.awt.Graphics3D;
 import de.dualuse.commons.swing.JKnob;
 import de.dualuse.commons.swing.JMicroscope;
 import de.dualuse.commons.util.Sticky;
-import de.dualuse.commons.util.Sticky.Retriever;
+import de.dualuse.commons.util.Sticky.Getter;
 
 import static java.lang.Math.*;
 
@@ -44,7 +44,7 @@ public class AffineFeaturePatchDebug {
 		final JFrame h = new JFrame();
 		
 		h.setBounds(0, 0, 200, 200);
-		h.setBounds(Sticky.value( new Retriever<Rectangle>() {
+		h.setBounds(Sticky.value( new Getter<Rectangle>() {
 			public Rectangle get() {
 				System.out.println("GET BOUNDS "+h.getBounds());
 				return h.getBounds();
