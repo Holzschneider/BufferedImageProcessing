@@ -27,7 +27,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.dualuse</groupId>
-			<artifactId>Fancy</artifactId>
+			<artifactId>Collective</artifactId>
 			<version>[1,)</version>
 			<scope>test</scope>
 		</dependency>

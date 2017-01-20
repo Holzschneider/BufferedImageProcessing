@@ -23,7 +23,7 @@ Conveniently manipulate images like this ...
 Release
 -------
 
-The base release 1.0.x corresponds to the unmodified image processing implementation, as it's extracted from legacy projects.
+The base releases 1.x.y correspond to the unmodified image processing implementation, as it's extracted from legacy projects.
 
 
 As usual, releases are deployed automatically to the deploy branch of this github repostory. 
@@ -32,9 +32,9 @@ To add a dependency on *BufferedImageProcessing* using maven, modify your *repos
 	<repositories>
 	 ...
 	  <repository>
-	    <id>BufferedImageProcessing-Repository</id>
-	    <name>BufferedImageProcessing's Git-based repo</name>
-	    <url>https://raw.githubusercontent.com/Holzschneider/BufferedImageProcessing/deploy/</url>
+	    <id>dualuse-Repository</id>
+	    <name>dualuse's Git-based repo</name>
+	    <url>https://dualuse.github.io/maven</url>
 	  </repository>
 	...
 	</repositories>
@@ -46,7 +46,7 @@ and modify your *dependencies* section to include the *BufferedImageProcessing* 
 	  	<dependency>
 	  		<groupId>de.dualuse</groupId>
 	  		<artifactId>BufferedImageProcessing</artifactId>
-	  		<version>LATEST</version>
+	  		<version>[1,)</version>
 	  	</dependency>
 	  ...
 	  </dependencies>
@@ -56,13 +56,13 @@ To add the repository and the dependency using gradle refer to this
 
 	repositories {
 	    maven {
-	        url "https://raw.githubusercontent.com/Holzschneider/BufferedImageProcessing/deploy/"
+	        url "https://dualuse.github.io/maven"
 	    }
 	}
 
 and this
 
 	dependencies {
-	  compile 'de.dualuse:BufferedImageProcessing:1.0.+'
+	  compile 'de.dualuse:BufferedImageProcessing:1.+'
 	}
 
