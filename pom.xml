@@ -11,6 +11,11 @@
 			<name>dualuse's git based repo</name>
 			<url>https://dualuse.github.io/maven/</url>
 		</repository>
+		<repository>
+			<id>Fancy-Repository</id>
+			<name>Fancy's Git-based repo</name>
+			<url>https://raw.githubusercontent.com/Holzschneider/Fancy/deploy/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>

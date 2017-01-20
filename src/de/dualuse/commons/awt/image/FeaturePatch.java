@@ -17,7 +17,7 @@ public class FeaturePatch {
 	// Coefficients
 	protected long gxx = 0, gxy = 0, gyy = 0;
 	protected long e = 0, n = 0;
-	protected long ex = 0, ey = 0;
+	protected long egx = 0, egy = 0;
 	
 	/////////// Results
 	public float error = 0;
@@ -51,7 +51,7 @@ public class FeaturePatch {
 
 		gxx = gxy = gyy = 0;
 		e = n = 0;
-		ex = ey = 0;
+		egx = egy = 0;
 		
 		return this;
 	}
@@ -93,8 +93,8 @@ public class FeaturePatch {
 				gxy += gxSum*gySum * weight;
 				gyy += gySum*gySum * weight;
 				
-				ex += delta* gxSum * weight;
-				ey += delta* gySum * weight; 
+				egx += delta* gxSum * weight;
+				egy += delta* gySum * weight; 
 				
 				n += weight;
 				e += delta*delta * weight;
@@ -102,8 +102,8 @@ public class FeaturePatch {
 		
 		// solve 2x2 linear equation system using current coefficient's values 
 		float ooDet = 1f/(gxx * gyy - gxy * gxy);
-		translateX = (gyy * ex - gxy * ey) * ooDet;
-		translateY = (gxx * ey - gxy * ex) * ooDet;
+		translateX = (gyy * egx - gxy * egy) * ooDet;
+		translateY = (gxx * egy - gxy * egx) * ooDet;
 		
 		error = e*1f/n;
 	}
