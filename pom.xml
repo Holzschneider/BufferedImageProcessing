@@ -20,6 +20,12 @@
 			<version>[1,)</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.dualuse</groupId>
+			<artifactId>Collective</artifactId>
+			<version>[1,)</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
