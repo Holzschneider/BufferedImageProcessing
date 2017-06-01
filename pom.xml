@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dualuse</groupId>
 	<artifactId>BufferedImageProcessing</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<name>BufferedImage Processing Library</name>
 	<repositories>
 		<repository>
-			<id>Swinger-Repository</id>
-			<name>Swinger's Git-based repo</name>
-			<url>https://raw.githubusercontent.com/Holzschneider/Swinger/deploy/</url>
+			<id>dualuse-repository</id>
+			<name>dualuse's Git-based maven artifact repository</name>
+			<url>https://dualuse.github.io/maven</url>
 		</repository>
 	</repositories>
 
@@ -23,6 +23,8 @@
 	</dependencies>
 
 	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<version>3.5.1</version>
