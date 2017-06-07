@@ -9,7 +9,7 @@ import java.awt.image.Raster;
 
 import de.dualuse.awt.image.AlphaBufferedImage.AlphaColorSpace;
 
-public class RGBAfBufferedImage extends FloatPlanesBufferedImage {
+public class RGBAFloatBufferedImage extends FloatPlanesBufferedImage {
 	static public final ColorSpace REF_COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_LINEAR_RGB);
 	
 	
@@ -69,16 +69,16 @@ public class RGBAfBufferedImage extends FloatPlanesBufferedImage {
 	public final FloatBufferedImage A;
 	
 	
-	public RGBAfBufferedImage(PixelBufferedImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
-	public RGBAfBufferedImage(int width, int height) {
+	public RGBAFloatBufferedImage(PixelBufferedImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
+	public RGBAFloatBufferedImage(int width, int height) {
 		this(width, height, new float[width*height], new float[width*height], new float[width*height], new float[width*height], 0, 0, 0,0, width);
 	}
 	
-	public RGBAfBufferedImage(int width, int height, FloatBufferedImage r, FloatBufferedImage g, FloatBufferedImage b, FloatBufferedImage a) {
+	public RGBAFloatBufferedImage(int width, int height, FloatBufferedImage r, FloatBufferedImage g, FloatBufferedImage b, FloatBufferedImage a) {
 		this(width, height, r.data, g.data, b.data, a.data, r.offset, g.offset, b.offset, a.offset, r.scan);
 	}
 
-	public RGBAfBufferedImage(int width, int height, float[] rPlane, float[] gPlane, float[] bPlane, float[] aPlane, int offsetR, int offsetG, int offsetB, int offsetA, int scan) {
+	public RGBAFloatBufferedImage(int width, int height, float[] rPlane, float[] gPlane, float[] bPlane, float[] aPlane, int offsetR, int offsetG, int offsetB, int offsetA, int scan) {
 		super(width, height, new float[][] { rPlane, gPlane, bPlane, aPlane }, new int[] { offsetR, offsetG, offsetB, offsetA }, scan, RGB_COLOR_MODEL);
 		
 		R = new FloatBufferedImage(width, height, rPlane, offsetR, scan, R_COLOR_MODEL);
@@ -118,7 +118,7 @@ public class RGBAfBufferedImage extends FloatPlanesBufferedImage {
 	}
 	
 	
-	public RGBAfBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage pbi, int fromX, int fromY) {
+	public RGBAFloatBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage pbi, int fromX, int fromY) {
 		for (int y=0,o=pbi.offset, OY=toX+toY*this.B.scan+this.B.offset, OU=toX+toY*this.G.scan+this.G.offset, OV=toX+toY*this.R.scan+this.R.offset, r = pbi.scan-width, R = this.B.scan-width;y<height;y++,o+=r, OY+=R, OU+=R, OV+=R)
 			for (int x=0;x<pbi.width;x++,o++,OY++,OU++,OV++) {
 				final int ARGB = pbi.pixels[o];

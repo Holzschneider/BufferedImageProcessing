@@ -5,7 +5,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 
-public class RGBfBufferedImage extends FloatPlanesBufferedImage {
+public class RGBFloatBufferedImage extends FloatPlanesBufferedImage {
 	static public final ColorSpace REF_COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_LINEAR_RGB);
 	
 	
@@ -62,16 +62,16 @@ public class RGBfBufferedImage extends FloatPlanesBufferedImage {
 	public final FloatBufferedImage B;
 	
 	
-	public RGBfBufferedImage(PixelBufferedImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
-	public RGBfBufferedImage(int width, int height) {
+	public RGBFloatBufferedImage(PixelBufferedImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
+	public RGBFloatBufferedImage(int width, int height) {
 		this(width, height, new float[width*height], new float[width*height], new float[width*height], 0, 0, 0, width);
 	}
 	
-	public RGBfBufferedImage(int width, int height, FloatBufferedImage r, FloatBufferedImage g, FloatBufferedImage b) {
+	public RGBFloatBufferedImage(int width, int height, FloatBufferedImage r, FloatBufferedImage g, FloatBufferedImage b) {
 		this(width, height, r.data, g.data, b.data, r.offset, g.offset, b.offset, r.scan);
 	}
 
-	public RGBfBufferedImage(int width, int height, float[] rPlane, float[] gPlane, float[] bPlane, int offsetR, int offsetG, int offsetB, int scan) {
+	public RGBFloatBufferedImage(int width, int height, float[] rPlane, float[] gPlane, float[] bPlane, int offsetR, int offsetG, int offsetB, int scan) {
 		super(width, height, new float[][] { rPlane, gPlane, bPlane }, new int[] { offsetR, offsetG, offsetB }, scan, RGB_COLOR_MODEL);
 		
 		R = new FloatBufferedImage(width, height, rPlane, offsetR, scan, R_COLOR_MODEL);
@@ -110,7 +110,7 @@ public class RGBfBufferedImage extends FloatPlanesBufferedImage {
 	}
 	
 	
-	public RGBfBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage pbi, int fromX, int fromY) {
+	public RGBFloatBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage pbi, int fromX, int fromY) {
 		for (int y=0,o=pbi.offset, OY=toX+toY*this.B.scan+this.B.offset, OU=toX+toY*this.G.scan+this.G.offset, OV=toX+toY*this.R.scan+this.R.offset, r = pbi.scan-width, R = this.B.scan-width;y<height;y++,o+=r, OY+=R, OU+=R, OV+=R)
 			for (int x=0;x<pbi.width;x++,o++,OY++,OU++,OV++) {
 				final int ARGB = pbi.pixels[o];
