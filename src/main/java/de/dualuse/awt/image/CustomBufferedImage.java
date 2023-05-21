@@ -7,7 +7,7 @@ import java.awt.image.WritableRaster;
 import java.util.Hashtable;
 
 abstract class CustomBufferedImage extends BufferedImage {
-	static public final ColorSpace RGB_COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_LINEAR_RGB);
+	static public final ColorSpace RGB_COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 	static public final ColorSpace VALUE_COLOR_SPACE = new ColorSpace(ColorSpace.CS_GRAY, 1) {
 		private static final long serialVersionUID = 1L;
 

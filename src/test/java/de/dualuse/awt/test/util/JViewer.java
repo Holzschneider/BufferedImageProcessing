@@ -13,13 +13,13 @@ public class JViewer extends JFrame implements MouseWheelListener, Icon, MouseMo
 
     public final AffineTransform magnifier = new AffineTransform();
     public final JLabel viewer = new JLabel();
-    public final Icon figure;
+    public ImageIcon figure;
 
     public JViewer(Image figure) {
         this(new ImageIcon(figure));
     }
 
-    public JViewer(Icon figure) {
+    public JViewer(ImageIcon figure) {
         this.figure = figure;
 
         viewer.setHorizontalAlignment(CENTER);

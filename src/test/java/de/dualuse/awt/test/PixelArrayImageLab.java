@@ -1,5 +1,6 @@
 package de.dualuse.awt.test;
 
+import de.dualuse.awt.image.LumaArrayImage;
 import de.dualuse.awt.image.PixelArrayImage;
 import de.dualuse.awt.test.util.JViewer;
 
@@ -77,31 +78,50 @@ public class PixelArrayImageLab {
         pai.setRGB(0,0,width,height, pixels,0,width);
 
 
+        LumaArrayImage lai = new LumaArrayImage(width,height);
 
-        JViewer v = new JViewer(new ImageIcon(pai));
+        long start = System.nanoTime();
+//        lai.set(new PixelArrayImage(width,height,pixels,0,width, PixelArrayImage.Format.RGB));
+        lai.setRGB(0,0,width,height,pixels,0,width);
+        long end = System.nanoTime();
+        System.out.println((end-start)/1e9+"s");
+
+        LumaArrayImage iai = new LumaArrayImage(width,height);
+        iai.set(new PixelArrayImage(width,height,pixels,0,width, PixelArrayImage.Format.RGB));
+
+        JViewer v = new JViewer(new ImageIcon(lai));
         v.setVisible(true);
 
         v.viewer.addMouseListener(new MouseAdapter() {
+            int counter =0 ;
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount()==2) {
-                    for (int y=0,o=0;y<height;y++)
-                        for (int x=0;x<width;x++,o++)
-                            if ((x&y)==0)
-                                rgb[o] = 0xFF000000;
-
-                    System.out.println("höhö");
-//                    try {
-//                        m.invoke(theTrackable);
-//                    } catch (IllegalAccessException ex) {
-//                        throw new RuntimeException(ex);
-//                    } catch (InvocationTargetException ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-
-                    v.repaint();
-
+                switch ((counter+=(e.getButton()==MouseEvent.BUTTON1?+1:-1))%3) {
+                    case 1: v.figure.setImage(pai); break;
+                    case 2: v.figure.setImage(lai); break;
+                    case 0: v.figure.setImage(iai); break;
                 }
+                v.repaint();
+
+
+//                if (e.getClickCount()==2) {
+//                    for (int y=0,o=0;y<height;y++)
+//                        for (int x=0;x<width;x++,o++)
+//                            if ((x&y)==0)
+//                                rgb[o] = 0xFF000000;
+//
+//                    System.out.println("höhö");
+////                    try {
+////                        m.invoke(theTrackable);
+////                    } catch (IllegalAccessException ex) {
+////                        throw new RuntimeException(ex);
+////                    } catch (InvocationTargetException ex) {
+////                        throw new RuntimeException(ex);
+////                    }
+//
+//                    v.repaint();
+//
+//                }
             }
         });
 
