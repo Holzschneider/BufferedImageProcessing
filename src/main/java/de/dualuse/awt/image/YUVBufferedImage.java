@@ -63,12 +63,11 @@ public class YUVBufferedImage extends IntPlanesBufferedImage {
 		};		
 	};
 	
-	public final IntBufferedImage Y;
-	public final IntBufferedImage U;
-	public final IntBufferedImage V;
+	public final IntArrayImage Y;
+	public final IntArrayImage U;
+	public final IntArrayImage V;
 	
 	public YUVBufferedImage(YUVBufferedImage bi) { this(bi.width,bi.height); this.set(bi); }
-	public YUVBufferedImage(PixelBufferedImage bi) { this(bi.width,bi.height); this.set(bi); } 
 	public YUVBufferedImage(int width, int height) {
 		this(width, height, new int[width*height], new int[width*height], new int[width*height], 0, 0, 0, width);
 	}
@@ -76,12 +75,11 @@ public class YUVBufferedImage extends IntPlanesBufferedImage {
 	public YUVBufferedImage(int width, int height, int[] yPlane, int[] uPlane, int[] vPlane, int offsetY, int offsetU, int offsetV, int scan) {
 		super(width, height, new int[][] { yPlane, uPlane, vPlane }, new int[] { offsetY, offsetU, offsetV }, scan, YUV_COLOR_MODEL);
 		
-		Y = new IntBufferedImage(width, height, yPlane, offsetY, scan, Y_COLOR_MODEL);
-		U = new IntBufferedImage(width, height, uPlane, offsetU, scan, U_COLOR_MODEL);
-		V = new IntBufferedImage(width, height, vPlane, offsetV, scan, V_COLOR_MODEL);
+		Y = new IntArrayImage(width, height, yPlane, offsetY, scan, Y_COLOR_MODEL);
+		U = new IntArrayImage(width, height, uPlane, offsetU, scan, U_COLOR_MODEL);
+		V = new IntArrayImage(width, height, vPlane, offsetV, scan, V_COLOR_MODEL);
 	}
-	
-	
+
 
 	public YUVBufferedImage set(YUVBufferedImage yuv) {
 		set(0,0, Math.min(width,yuv.width), Math.min(height,yuv.height), yuv, 0, 0);
@@ -95,13 +93,13 @@ public class YUVBufferedImage extends IntPlanesBufferedImage {
 		return this;
 	}
 
-	public YUVBufferedImage set(PixelBufferedImage pbi) { return this.set(0,0,Math.min(pbi.width, this.width), Math.min(pbi.height, this.height),pbi, 0,0); }
-	public YUVBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage pbi, int fromX, int fromY) {
+	public YUVBufferedImage set(PixelArrayImage pbi) { return this.set(0,0,Math.min(pbi.width, this.width), Math.min(pbi.height, this.height),pbi, 0,0); }
+	public YUVBufferedImage set(int toX, int toY, int width, int height, PixelArrayImage pbi, int fromX, int fromY) {
 		set(
 				width,height, 
-				Y.pixels, Y.offset+toX+toY*scan, scan, 
-				U.pixels, U.offset+toX+toY*scan, scan, 
-				V.pixels, V.offset+toX+toY*scan, scan, 
+				Y.values, Y.offset+toX+toY*scan, scan,
+				U.values, U.offset+toX+toY*scan, scan,
+				V.values, V.offset+toX+toY*scan, scan,
 				pbi.pixels, pbi.offset+fromX+fromY*pbi.scan, pbi.scan);
 		
 //		for (int y=0,o=pbi.offset, OY=toX+toY*this.Y.scan+this.Y.offset, OU=toX+toY*this.U.scan+this.U.offset, OV=toX+toY*this.V.scan+this.V.offset, r = pbi.scan-width, R = this.Y.scan-width;y<height;y++,o+=r, OY+=R, OU+=R, OV+=R)
@@ -128,8 +126,8 @@ public class YUVBufferedImage extends IntPlanesBufferedImage {
 	}
 	
 	
-	public YUVBufferedImage gradients(IntBufferedImage from, SeparableKernel filter) { return this.gradients(0, 0, Math.min(width, from.width), Math.min(height, from.height), from, 0,0, filter); }
-	public YUVBufferedImage gradients(int toX, int toY, int width, int height, IntBufferedImage from, int fromX, int fromY, SeparableKernel filter) {
+	public YUVBufferedImage gradients(IntArrayImage from, SeparableKernel filter) { return this.gradients(0, 0, Math.min(width, from.width), Math.min(height, from.height), from, 0,0, filter); }
+	public YUVBufferedImage gradients(int toX, int toY, int width, int height, IntArrayImage from, int fromX, int fromY, SeparableKernel filter) {
 		filter.norm(1).convolve(U, toX, toY, from, fromX, fromY, width, height, 1, 0);
 		filter.norm(filter.norm*filter.norm).convolve(Y, toX, toY, U, toX, toY, width, height, 0, 1);
 		
@@ -139,8 +137,8 @@ public class YUVBufferedImage extends IntPlanesBufferedImage {
 		return this;
 	}
 	
-	public YUVBufferedImage gradients(IntBufferedImage from, int R) { return this.gradients(0, 0, Math.min(width, from.width), Math.min(height, from.height), from, 0,0, R); }
-	public YUVBufferedImage gradients(int toX, int toY, int width, int height, IntBufferedImage from, int fromX, int fromY, int R) {
+	public YUVBufferedImage gradients(IntArrayImage from, int R) { return this.gradients(0, 0, Math.min(width, from.width), Math.min(height, from.height), from, 0,0, R); }
+	public YUVBufferedImage gradients(int toX, int toY, int width, int height, IntArrayImage from, int fromX, int fromY, int R) {
 		BoxFilter.HORIZONTAL.convolve(U, toX, toY, from, fromX, fromY, width, height, R, 1);
 		BoxFilter.VERTICAL.convolve(Y, toX, toY, U, toX, toY, width, height, R, (R*2+1)*(R*2+1));
 		
@@ -150,8 +148,8 @@ public class YUVBufferedImage extends IntPlanesBufferedImage {
 		return this;
 	}
 
-	public YUVBufferedImage gradients(IntBufferedImage from) { return this.gradients(0,0,Math.min(width,from.width),Math.min(height,from.height),from, 0,0); }
-	public YUVBufferedImage gradients(int toX, int toY, int width, int height, IntBufferedImage from, int fromX, int fromY) {
+	public YUVBufferedImage gradients(IntArrayImage from) { return this.gradients(0,0,Math.min(width,from.width),Math.min(height,from.height),from, 0,0); }
+	public YUVBufferedImage gradients(int toX, int toY, int width, int height, IntArrayImage from, int fromX, int fromY) {
 		Y.set(toX, toY, width, height, from, fromX, fromY);
 		SeparableKernel.SOBEL.convolve(U, toX, toY, Y, toX, toY, width, height, 1, 0);
 		SeparableKernel.SOBEL.convolve(V, toX, toY, Y, toX, toY, width, height, 0, 1);

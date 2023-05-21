@@ -1,95 +1,13 @@
 package de.dualuse.awt.image;
 
-import java.awt.Point;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.BandedSampleModel;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.awt.image.WritableRaster;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.image.*;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.Arrays;
 
-public class ByteBufferedImage extends CustomBufferedImage implements Cloneable, Serializable {
-
+public class ByteArrayImage extends CustomBufferedImage implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
 
-//	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-//		out.writeInt(width);
-//		out.writeInt(height);
-//		out.writeInt(offset);
-//		out.writeInt(scan);
-//		out.writeObject(pixels);
-//	}
-//
-//	@SuppressWarnings("restriction") private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-//
-//		try {
-//			Field widthField = ByteBufferedImage.class.getField("width"); widthField.setAccessible(true); widthField.setInt(this, in.readInt());
-//			Field heightField = ByteBufferedImage.class.getField("height"); heightField.setAccessible(true); heightField.setInt(this, in.readInt());
-//			Field offsetField = ByteBufferedImage.class.getField("offset"); offsetField.setAccessible(true); offsetField.setInt(this, in.readInt());
-//			Field scanField = ByteBufferedImage.class.getField("scan"); scanField.setAccessible(true); scanField.setInt(this, in.readInt());
-//			Field pixelsField = ByteBufferedImage.class.getField("pixels"); pixelsField.setAccessible(true); pixelsField.set(this, in.readObject());
-//			Field dataField = ByteBufferedImage.class.getField("data"); dataField.setAccessible(true); dataField.set(this, this.pixels);
-//
-//			Field typeField = BufferedImage.class.getDeclaredField("imageType"); typeField.setAccessible(true); typeField.set(this, BufferedImage.TYPE_CUSTOM);
-//			Field colorModelField = BufferedImage.class.getDeclaredField("colorModel"); colorModelField.setAccessible(true); colorModelField.set(this, ByteColorModel);
-//			Field rasterField = BufferedImage.class.getDeclaredField("raster"); rasterField.setAccessible(true); rasterField.set(this, new sun.awt.image.ByteBandedRaster(
-//					new BandedSampleModel(DataBuffer.TYPE_BYTE, width, height, 1),
-//					new DataBufferByte(data, height*scan+offset, offset),
-//					new Point(0,0)
-//				));
-//
-//		} catch (Exception ex) {
-//			throw new Error(ex);
-//		}
-//
-//
-//	}
-
-//	static ColorSpace VALUE_COLOR_SPACE = new ColorSpace(ColorSpace.CS_GRAY, 1) {
-//		private static final long serialVersionUID = 1L;
-//
-//		public float[] toRGB(float[] colorvalue) { return REF_COLOR_SPACE.toRGB(colorvalue); }
-//		public float[] toCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.toCIEXYZ(colorvalue); }
-//		public float[] fromRGB(float[] rgbvalue) { return REF_COLOR_SPACE.fromRGB(rgbvalue); }
-//		public float[] fromCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.fromCIEXYZ(colorvalue); }
-//	};
-//
-//
-//	static ColorModel VALUE_COLOR_MODEL = new ComponentColorModel(VALUE_COLOR_SPACE, new int[] { 8 }, false, true, Transparency.OPAQUE, DataBuffer.TYPE_INT) {
-//		public int getRGB(Object inData) {
-//			int[] rgb = (int[])inData;
-//
-//			final int raw = rgb[0];
-////			final int absed = raw<0?(-raw)&0xFF:raw;
-//			final int clamped = raw<0?0:(raw>0xFF?0xFF:raw);
-//
-//			rgb[0] = clamped;
-//			final int gray = raw&0xFF;//getRed(rgb); //rgb[0];
-//
-////			return 0xFF000000 | (gray<< 16) | (gray<< 8) | (raw>0?gray:-gray);
-//			return 0xFF000000 | (clamped<< 16) | (clamped<< 8) | ((raw>0?gray:-gray)&0xFF);
-//		}
-//	};
-
-	static ColorSpace Y_COLOR_SPACE = new ColorSpace(ColorSpace.CS_GRAY, 1) {
-		private static final long serialVersionUID = 1L;
-
-		public float[] toRGB(float[] colorvalue) { return REF_COLOR_SPACE.toRGB(colorvalue); }
-		public float[] toCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.toCIEXYZ(colorvalue); }
-		public float[] fromRGB(float[] rgbvalue) { return REF_COLOR_SPACE.fromRGB(rgbvalue); }
-		public float[] fromCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.fromCIEXYZ(colorvalue); }
-	};
-
-
-	static ColorModel ByteColorModel = new ComponentColorModel(Y_COLOR_SPACE, new int[] { 8 }, false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE) {
+	static ColorModel VALUE_COLOR_MODEL = new ComponentColorModel(VALUE_COLOR_SPACE, new int[] { 8 }, false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE) {
 		public int getRGB(Object inData) {
 			byte[] rgb = (byte[])inData;
 
@@ -105,51 +23,43 @@ public class ByteBufferedImage extends CustomBufferedImage implements Cloneable,
 		}
 	};
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	public final byte[] data;
-	public final byte[] pixels;
-
-//	public ByteBufferedImage clone() {
-//		return new ByteBufferedImage(width, height, Arrays.copyOf(data, data.length), offset, scan);
-//	}
-
-	public ByteBufferedImage(int width, int height) {
+	public final byte[] values;
+	public ByteArrayImage(int width, int height) {
 		this(width, height, new byte[width*height], 0, width);
 	}
 
-	public ByteBufferedImage(int width, int height, byte data[], int offset, int scan) {
-		this(width, height, data, offset, scan, ByteColorModel);
+	public ByteArrayImage(int width, int height, byte data[], int offset, int scan) {
+		this(width, height, data, offset, scan, VALUE_COLOR_MODEL);
 	}
 
-	protected ByteBufferedImage(int width, int height, int offset, int scan, ColorModel cm, WritableRaster wr) {
+	protected ByteArrayImage(int width, int height, int offset, int scan, ColorModel cm, WritableRaster wr) {
 		super(width, height, offset, scan, cm, wr, false);
 
-		this.pixels = this.data = ((DataBufferByte)wr.getDataBuffer()).getData();
+		this.values = ((DataBufferByte)wr.getDataBuffer()).getData();
 	}
 
-	protected ColorModel colorModel;
 	@SuppressWarnings("restriction")
-	protected ByteBufferedImage(int width, int height, byte[] data, int offset, int scan, ColorModel cm) {
+	protected ByteArrayImage(int width, int height, byte[] values, int offset, int scan, ColorModel cm) {
 		super(width, height, offset, scan, cm,
-				cm.createCompatibleWritableRaster(width,height),
-//				new sun.awt.image.ByteBandedRaster(
-//						new BandedSampleModel(DataBuffer.TYPE_BYTE, width, height, 1),
-//						new DataBufferByte(data, height*scan+offset, offset),
-//						new Point(0,0)
-//					),
+				new ByteBandedRaster(
+					new BandedSampleModel(DataBuffer.TYPE_BYTE, width, height, scan, new int[] {0}, new int[] {0}),
+					new DataBufferByte(values, height*scan, offset),
+					new Point(0,0)
+				),
 				true);
 
-		this.colorModel = cm;
-		this.pixels = this.data = data;
+		this.values = values;
 	}
 
-	public ByteBufferedImage getSubimage(int x, int y, int w, int h) {
-		return new ByteBufferedImage(w, h, data, this.offset+x+y*this.scan, this.scan, this.colorModel);
+	public int offset(int x, int y) { return offset+x+y*scan; }
+
+	@Override
+	public ByteArrayImage crop(int x, int y, int width, int height) {
+		return new ByteArrayImage(width, height, values, offset(x,y), this.scan);
 	}
+
 
 	public float getValue(float x, float y) {
 		if (x<0 || y<0 || x>width-2 || y>height-2)
@@ -159,8 +69,8 @@ public class ByteBufferedImage extends CustomBufferedImage implements Cloneable,
 //		y-=0.5f;
 
 		final int xi = (int)x, yi = (int)y;
-		int o = xi+yi*scan;
-		final int ul = data[o], ur = data[++o], lr = data[o+=scan], ll = data[--o];
+		int o = offset(xi,yi);
+		final int ul = values[o], ur = values[++o], lr = values[o+=scan], ll = values[--o];
 
 		final float xr = x-xi, yr = y-yi, omxr = 1f-xr, omyr = 1f-yr;
 		return (ul*omxr+ur*xr)*omyr+(ll*omxr+lr*xr)*yr;
@@ -168,7 +78,7 @@ public class ByteBufferedImage extends CustomBufferedImage implements Cloneable,
 
 	public int getValue(int x, int y) {
 		if (x>0 && y>0 && x<width && y<height)
-			return data[x+y*scan];
+			return values[offset(x,y)];
 		else
 			return 0;
 	}

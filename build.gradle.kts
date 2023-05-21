@@ -25,3 +25,8 @@ tasks.getByName<Test>("test") {
 tasks.wrapper {
     this.gradleVersion = "8.1.1"
 }
+
+java {
+    this.targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8;
+    this.sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8;
+}

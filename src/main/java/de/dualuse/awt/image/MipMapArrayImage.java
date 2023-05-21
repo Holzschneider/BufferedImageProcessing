@@ -3,12 +3,12 @@ package de.dualuse.awt.image;
 import java.awt.image.BufferedImage;
 
 
-public class MipMapBufferedImage extends PixelBufferedImage {
+public class MipMapArrayImage extends PixelArrayImage {
 	
-	public final MipMapBufferedImage mipmap;
+	public final MipMapArrayImage mipmap;
 	
 	public int getRGB(float x, float y, float s) {
-		MipMapBufferedImage m = this;
+		MipMapArrayImage m = this;
 		for (;s/2>1;x/=2,y/=2,s/=2) 
 			m = m.mipmap;
 		
@@ -33,33 +33,33 @@ public class MipMapBufferedImage extends PixelBufferedImage {
 	}
 	
 	//TODO maybe dword / qword align pixel lines here
-	private MipMapBufferedImage(int width, int height, int pixels[], int offset, Format type) {
+	private MipMapArrayImage(int width, int height, int pixels[], int offset, Format type) {
 		super(width, height, pixels, offset, width, type);
 		
 		if (width>=2 && height>=2)
-			mipmap = new MipMapBufferedImage( (width+width%2)/2, (height+height%2)/2, pixels, offset+=width*height, type);
+			mipmap = new MipMapArrayImage( (width+width%2)/2, (height+height%2)/2, pixels, offset+=width*height, type);
 		else
 			mipmap = this;
 	}
 
-	public MipMapBufferedImage(PixelBufferedImage copy) {
+	public MipMapArrayImage(PixelArrayImage copy) {
 		this(copy.getWidth(), copy.getHeight(), Format.forCode(copy.getType()));
 		copy.getRGB(0, 0, copy.getWidth(), copy.getHeight(), pixels, this.offset, this.scan);
 		generateMipmap();
 	}
 	
 
-	public MipMapBufferedImage(BufferedImage copy) {
+	public MipMapArrayImage(BufferedImage copy) {
 		this(copy, Format.forConversion(copy) );
 	}
 	
-	public MipMapBufferedImage(BufferedImage copy, Format type) {
+	public MipMapArrayImage(BufferedImage copy, Format type) {
 		this(copy.getWidth(), copy.getHeight(), type);
 		copy.getRGB(0, 0, copy.getWidth(), copy.getHeight(), pixels, this.offset, this.scan);
 		generateMipmap();
 	}
 	
-	public MipMapBufferedImage(int width, int height, Format type) {
+	public MipMapArrayImage(int width, int height, Format type) {
 		this(width,height, fullMipMapBufferForSize(width, height), 0, type);
 	}
 	
@@ -84,13 +84,13 @@ public class MipMapBufferedImage extends PixelBufferedImage {
 		
 //		System.out.println(width+", "+height+" ->  "+mipmap.width+", "+mipmap.height);
 		
-		superSample(width, height, pixels, offset, scan, mipmap);
+		sample(width, height, pixels, offset, scan, mipmap);
 		
 		mipmap.generateMipmap();
 	}
 	
-	public MipMapBufferedImage getLevel(int l) {
-		MipMapBufferedImage mmbi = this;
+	public MipMapArrayImage getLevel(int l) {
+		MipMapArrayImage mmbi = this;
 		for (int i=0;i<l;i++)
 			mmbi = mmbi.mipmap;
 		
@@ -98,16 +98,16 @@ public class MipMapBufferedImage extends PixelBufferedImage {
 	}
 	
 
-	public static void superSample(
+	public static void sample(
 			int width, int height, 
 			int pixels[], int offset, int scan, 
-			PixelBufferedImage mipmap) {
+			PixelArrayImage mipmap) {
 		
-		superSample(width, height, pixels, offset, scan, mipmap.pixels, mipmap.offset, mipmap.scan, mipmap.getType()==MipMapBufferedImage.TYPE_INT_ARGB);
+		sample(width, height, pixels, offset, scan, mipmap.pixels, mipmap.offset, mipmap.scan, mipmap.getType()== MipMapArrayImage.TYPE_INT_ARGB);
 	}
 
 	
-	public static void superSample(
+	public static void sample(
 			int width, int height, 
 			int pixels[], int offset, int scan, 
 			int mipmappixels[], int mipmapoffset, int mipmapscan,

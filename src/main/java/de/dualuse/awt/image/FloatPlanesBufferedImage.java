@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferFloat;
-import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 import java.util.List;
 //
@@ -62,7 +61,7 @@ import java.util.List;
 public class FloatPlanesBufferedImage extends BufferedImage {
 	
 	public final int width, height, scan;
-	public final FloatBufferedImage planes[];
+	public final FloatArrayImage planes[];
 	
 	
 	private static int[] indices(float[][] planes) {
@@ -86,10 +85,10 @@ public class FloatPlanesBufferedImage extends BufferedImage {
 		this.height = height;
 		this.scan = scan;
 		
-		this.planes = new FloatBufferedImage[planes.length];
+		this.planes = new FloatArrayImage[planes.length];
 		
 		for (int i=0;i<planes.length;i++)
-			this.planes[i] = new FloatBufferedImage(width, height, planes[i], offsets[i], scan);
+			this.planes[i] = new FloatArrayImage(width, height, planes[i], offsets[i], scan);
 		
 	}
 

@@ -57,26 +57,26 @@ public class RGBFloatBufferedImage extends FloatPlanesBufferedImage {
 		};
 	};
 	
-	public final FloatBufferedImage R;
-	public final FloatBufferedImage G;
-	public final FloatBufferedImage B;
+	public final FloatArrayImage R;
+	public final FloatArrayImage G;
+	public final FloatArrayImage B;
 	
 	
-	public RGBFloatBufferedImage(PixelBufferedImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
+	public RGBFloatBufferedImage(PixelArrayImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
 	public RGBFloatBufferedImage(int width, int height) {
 		this(width, height, new float[width*height], new float[width*height], new float[width*height], 0, 0, 0, width);
 	}
 	
-	public RGBFloatBufferedImage(int width, int height, FloatBufferedImage r, FloatBufferedImage g, FloatBufferedImage b) {
-		this(width, height, r.data, g.data, b.data, r.offset, g.offset, b.offset, r.scan);
+	public RGBFloatBufferedImage(int width, int height, FloatArrayImage r, FloatArrayImage g, FloatArrayImage b) {
+		this(width, height, r.values, g.values, b.values, r.offset, g.offset, b.offset, r.scan);
 	}
 
 	public RGBFloatBufferedImage(int width, int height, float[] rPlane, float[] gPlane, float[] bPlane, int offsetR, int offsetG, int offsetB, int scan) {
 		super(width, height, new float[][] { rPlane, gPlane, bPlane }, new int[] { offsetR, offsetG, offsetB }, scan, RGB_COLOR_MODEL);
 		
-		R = new FloatBufferedImage(width, height, rPlane, offsetR, scan, R_COLOR_MODEL);
-		G = new FloatBufferedImage(width, height, gPlane, offsetG, scan, G_COLOR_MODEL);
-		B = new FloatBufferedImage(width, height, bPlane, offsetB, scan, B_COLOR_MODEL);
+		R = new FloatArrayImage(width, height, rPlane, offsetR, scan, R_COLOR_MODEL);
+		G = new FloatArrayImage(width, height, gPlane, offsetG, scan, G_COLOR_MODEL);
+		B = new FloatArrayImage(width, height, bPlane, offsetB, scan, B_COLOR_MODEL);
 	}
 	
 	
@@ -89,10 +89,10 @@ public class RGBFloatBufferedImage extends FloatPlanesBufferedImage {
 		
 		final int xi = (int)x, yi = (int)y;
 		int o = xi+yi*scan;
-		final int ul = 0xFF000000|((int)R.data[o]<<16)|((int)G.data[o]<<8)|(int)B.data[o];
-		final int ur = 0xFF000000|((int)R.data[++o]<<16)|((int)G.data[o]<<8)|(int)B.data[o];
-		final int lr = 0xFF000000|((int)R.data[o+=scan]<<16)|((int)G.data[o]<<8)|(int)B.data[o];
-		final int ll = 0xFF000000|((int)R.data[--o]<<16)|((int)G.data[o]<<8)|(int)B.data[o];
+		final int ul = 0xFF000000|((int)R.values[o]<<16)|((int)G.values[o]<<8)|(int)B.values[o];
+		final int ur = 0xFF000000|((int)R.values[++o]<<16)|((int)G.values[o]<<8)|(int)B.values[o];
+		final int lr = 0xFF000000|((int)R.values[o+=scan]<<16)|((int)G.values[o]<<8)|(int)B.values[o];
+		final int ll = 0xFF000000|((int)R.values[--o]<<16)|((int)G.values[o]<<8)|(int)B.values[o];
 		
 		final int ulB = (ul>>>0)&0xFF, urB = (ur>>>0)&0xFF, lrB = (lr>>>0)&0xFF, llB = (ll>>>0)&0xFF;
 		final int ulG = (ul>>>8)&0xFF, urG = (ur>>>8)&0xFF, lrG = (lr>>>8)&0xFF, llG = (ll>>>8)&0xFF;
@@ -110,7 +110,7 @@ public class RGBFloatBufferedImage extends FloatPlanesBufferedImage {
 	}
 	
 	
-	public RGBFloatBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage pbi, int fromX, int fromY) {
+	public RGBFloatBufferedImage set(int toX, int toY, int width, int height, PixelArrayImage pbi, int fromX, int fromY) {
 		for (int y=0,o=pbi.offset, OY=toX+toY*this.B.scan+this.B.offset, OU=toX+toY*this.G.scan+this.G.offset, OV=toX+toY*this.R.scan+this.R.offset, r = pbi.scan-width, R = this.B.scan-width;y<height;y++,o+=r, OY+=R, OU+=R, OV+=R)
 			for (int x=0;x<pbi.width;x++,o++,OY++,OU++,OV++) {
 				final int ARGB = pbi.pixels[o];
@@ -118,9 +118,9 @@ public class RGBFloatBufferedImage extends FloatPlanesBufferedImage {
 				final int green = (ARGB>>8)&0xFF;
 				final int blue = (ARGB>>0)&0xFF;
 				
-				this.R.data[OV] = (int)red;
-				this.B.data[OY] = (int)blue;
-				this.G.data[OU] = (int)green;
+				this.R.values[OV] = (int)red;
+				this.B.values[OY] = (int)blue;
+				this.G.values[OU] = (int)green;
 			}
 		
 		return this;

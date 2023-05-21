@@ -1,4 +1,4 @@
-package de.dualuse.awt.image;
+package de.dualuse.awt.test;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import de.dualuse.commons.swing.JMicroscope;
+//import de.dualuse.commons.swing.JMicroscope;
 
 public class YUVBufferedImageTest {
 	public static void main(String[] args) throws IOException {

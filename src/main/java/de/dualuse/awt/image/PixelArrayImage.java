@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PixelBufferedImage extends CustomBufferedImage {
+public class PixelArrayImage extends CustomBufferedImage {
 	static final ColorSpace sRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 	static final int B32 = 0xFF000000, B24 = 0x00FF0000, B16 = 0x0000FF00, B8 = 0xFF;
 	static final int[] MASK_RGB = { B24, B16, B8 }, MASK_BGR = { B8, B16, B24 }, MASK_ARGB = { B24, B16, B8, B32 };
@@ -55,30 +55,30 @@ public class PixelBufferedImage extends CustomBufferedImage {
 
 	//////////////////////////////////////////////// CONSTRUCTORS //////////////////////////////////////////////////////
 
-	public PixelBufferedImage(BufferedImage bi) {
+	public PixelArrayImage(BufferedImage bi) {
 		this(bi, Format.forConversion(bi) );
 	}
 	
-	public PixelBufferedImage(BufferedImage bi, Format type) {
+	public PixelArrayImage(BufferedImage bi, Format type) {
 		this(bi.getWidth(),bi.getHeight(),type);
 		bi.getRGB(0, 0, width, height, pixels, 0, scan);
 	}
 
-	public PixelBufferedImage(int width, int height) {
+	public PixelArrayImage(int width, int height) {
 		this(width,height, Format.ARGB);
 	}
 	
-	public PixelBufferedImage(int width, int height, Format type) {
+	public PixelArrayImage(int width, int height, Format type) {
 		this(width,height,new int[width*height],0,width,type);
 	}
 	
 	public final int[] pixels;
 
-	public PixelBufferedImage(int width, int height, int[] pixels, int offset, int scan, Format type) {
+	public PixelArrayImage(int width, int height, int[] pixels, int offset, int scan, Format type) {
 		this( width,height, new DataBufferInt(pixels,pixels.length,offset),scan,type);
 	}
 
-	private PixelBufferedImage(int width, int height, DataBufferInt data, int scan, Format type) {
+	private PixelArrayImage(int width, int height, DataBufferInt data, int scan, Format type) {
 		super(	width, height, data.getOffset(), scan, type.model,
 				Raster.createPackedRaster(data,width,height,scan,type.masks,null),
 				false);
@@ -86,10 +86,12 @@ public class PixelBufferedImage extends CustomBufferedImage {
 		this.pixels = data.getData();
 	}
 
+	public int offset(int x, int y) { return x+y*scan+offset; }
+
 
 	@Override
 	public String toString() {
-		return "Pixel"+super.toString();
+		return "PixelArray"+super.toString().substring("buffered".length());
 	}
 
 
@@ -101,15 +103,15 @@ public class PixelBufferedImage extends CustomBufferedImage {
 	//////////////////////////////////////////////// ACCESSORS /////////////////////////////////////////////////////////
 
 	
-	public PixelBufferedImage set(File f) throws IOException {
+	public PixelArrayImage set(File f) throws IOException {
 		return read(ImageIO.createImageInputStream(f));
 	}
 	
-	public PixelBufferedImage set(InputStream is) throws IOException {
+	public PixelArrayImage set(InputStream is) throws IOException {
 		return read(new MemoryCacheImageInputStream(is));
 	}
 	
-	public PixelBufferedImage set(ImageInputStream iis) throws IOException {
+	public PixelArrayImage set(ImageInputStream iis) throws IOException {
 		ImageReader ir = ImageIO.getImageReaders(iis).next();
 		
 		ir.setInput(iis);
@@ -119,7 +121,7 @@ public class PixelBufferedImage extends CustomBufferedImage {
 		final int[] bands = type == BufferedImage.TYPE_INT_RGB?new int[] { 0, 1, 2 }:new int[] { 0, 1, 2, 3 };
 
 		ImageReadParam irp = new ImageReadParam();
-		PixelBufferedImage destination = this;
+		PixelArrayImage destination = this;
 		irp.setDestination(destination);
 		irp.setDestinationBands(bands);
 		irp.setSourceBands(bands);
@@ -131,15 +133,15 @@ public class PixelBufferedImage extends CustomBufferedImage {
 
 
 
-	public static PixelBufferedImage read(File f) throws IOException {
+	public static PixelArrayImage read(File f) throws IOException {
 		return read(ImageIO.createImageInputStream(f));
 	}
 
-	public static PixelBufferedImage read(InputStream is) throws IOException {
+	public static PixelArrayImage read(InputStream is) throws IOException {
 		return read(new MemoryCacheImageInputStream(is));
 	}
 
-	public static PixelBufferedImage read(ImageInputStream iis) throws IOException {
+	public static PixelArrayImage read(ImageInputStream iis) throws IOException {
 		ImageReader ir = ImageIO.getImageReaders(iis).next();
 		ir.setInput(iis);
 
@@ -147,7 +149,7 @@ public class PixelBufferedImage extends CustomBufferedImage {
 		int bands[] = type == Format.RGB?new int[] { 0, 1, 2 }:new int[] { 0, 1, 2, 3 };
 
 		ImageReadParam irp = new ImageReadParam();
-		PixelBufferedImage destination = new PixelBufferedImage(ir.getWidth(0),ir.getHeight(0),type);
+		PixelArrayImage destination = new PixelArrayImage(ir.getWidth(0),ir.getHeight(0),type);
 		irp.setDestination(destination);
 		irp.setDestinationBands(bands);
 		irp.setSourceBands(bands);
@@ -164,12 +166,10 @@ public class PixelBufferedImage extends CustomBufferedImage {
 		
 		return pixels[x+y*scan+offset];
 	}
-	
 
-	public PixelBufferedImage getSubimage(int x, int y, int w, int h) {
-		return new PixelBufferedImage(w, h, pixels, this.offset+x+y*this.scan, this.scan, Format.forCode(this.getType()));
+	public PixelArrayImage crop(int x, int y, int w, int h) {
+		return new PixelArrayImage(w, h, pixels, offset(x,y), this.scan, Format.forCode(this.getType()));
 	}
-
 
 	public int getRGB(float x, float y) {
 		if (x<0 || y<0 || x>width-2 || y>height-2)
@@ -225,8 +225,7 @@ public class PixelBufferedImage extends CustomBufferedImage {
 		
 		return argb;
 	}
-	
-	
+
 	public int[] getRGB(double startX, double startY, int w, int h, int[] rgbArray, int off, int scansize) {
 		final int sx = (int) startX, sy = (int) startY;
 		
@@ -245,109 +244,64 @@ public class PixelBufferedImage extends CustomBufferedImage {
 		return rgbArray;
 	}
 	
-	
-	public PixelBufferedImage sample(int toX, int toY, int w, int h, PixelBufferedImage from, float fromX, float fromY, float fromW, float fromH) {
-		
-		float stepX = fromW/w, stepY = fromH/h;
-		//TODO IMPLEMENT THIS !!
-		
-		return this;
-	}
-
-	
-	public PixelBufferedImage set(PixelBufferedImage from) { return set(0,0,Math.min(width,from.width),Math.min(height,from.height),from,0,0); }
-	public PixelBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage from, int fromX, int fromY) {
+	public PixelArrayImage set(PixelArrayImage from) { return set(0,0,Math.min(width,from.width),Math.min(height,from.height),from,0,0); }
+	public PixelArrayImage set(int toX, int toY, int width, int height, PixelArrayImage from, int fromX, int fromY) {
 		for (int y=0,o=offset+toY*scan+toX,r=scan,O=from.offset+fromX+fromY*from.scan,rx=from.scan;y<height;y++,O+=rx,o+=r)
 			System.arraycopy(from.pixels, O, pixels, o, width);
-		
-//		for (int y=0,o=this.offset+toX+toY*this.scan,r=this.scan-width,O=from.offset,rx=from.scan-width;y<height;y++,O+=rx,o+=r) 
-//			for (int x=0;x<width;x++,O++,o++)
-//				data[o] = from.data[O];
-//		
+
 		return this;
 	}
 
-	public PixelBufferedImage set(YUVBufferedImage from) { return this.set(0,0, this.width<from.width?this.width:from.width, this.height<from.height?this.height:from.height, from, 0,0); }
-	public PixelBufferedImage set(int toX, int toY, int width, int height, YUVBufferedImage from, int fromX, int fromY) {
+	public PixelArrayImage set(YUVBufferedImage from) { return this.set(0,0, this.width<from.width?this.width:from.width, this.height<from.height?this.height:from.height, from, 0,0); }
+	public PixelArrayImage set(int toX, int toY, int width, int height, YUVBufferedImage from, int fromX, int fromY) {
 		setYUV(	width, height, 
 				
 				this.pixels, this.offset+toX+toY*this.scan, this.scan, 
 				
-				from.Y.pixels, from.Y.offset+fromX+fromY*from.Y.scan, from.Y.scan, 
-				from.U.pixels, from.U.offset+fromX+fromY*from.U.scan, from.U.scan, 
-				from.V.pixels, from.V.offset+fromX+fromY*from.V.scan, from.V.scan);
-		
+				from.Y.values, from.Y.offset+fromX+fromY*from.Y.scan, from.Y.scan,
+				from.U.values, from.U.offset+fromX+fromY*from.U.scan, from.U.scan,
+				from.V.values, from.V.offset+fromX+fromY*from.V.scan, from.V.scan);
+
 		return this;
 	}
 
-	
 
-	public PixelBufferedImage set(IntBufferedImage from) { return this.set(0,0, this.width<from.width?this.width:from.width, this.height<from.height?this.height:from.height, from, 0,0); }
-	public PixelBufferedImage set(int toX, int toY, int width, int height, IntBufferedImage from, int fromX, int fromY) {
+	public PixelArrayImage set(IntArrayImage from) { return this.set(0,0, this.width<from.width?this.width:from.width, this.height<from.height?this.height:from.height, from, 0,0); }
+	public PixelArrayImage set(int toX, int toY, int width, int height, IntArrayImage from, int fromX, int fromY) {
 		setLuma(	width, height, 
 					this.pixels, this.offset+toX+toY*this.scan, this.scan, 
-					from.pixels, from.offset+fromX+fromY*from.scan, from.scan 
+					from.values, from.offset+fromX+fromY*from.scan, from.scan
 				);
 		
 		return this;
 	}
 
-	
-//			{
-//				final int c = pixels[O], r = pixels[O+1] , d = pixels[O+scan], e = pixels[O+scan+1];
-//				
-//				final int cB = (c>>>0)&0xFF, fB = (r>>>0)&0xFF, dB = (d>>>0)&0xFF, eB = (e>>>0)&0xFF;
-//				final int cG = (c>>>8)&0xFF, fG = (r>>>8)&0xFF, dG = (d>>>8)&0xFF, eG = (e>>>8)&0xFF;
-//				final int cR = (c>>>16)&0xFF, fR = (r>>>16)&0xFF, dR = (d>>>16)&0xFF, eR = (e>>>16)&0xFF;
-//				final int cA = (c>>>24)&0xFF, fA = (r>>>24)&0xFF, dA = (d>>>24)&0xFF, eA = (e>>>24)&0xFF;
-//				
-//				final int B = ((cB * uovo + fB * urvo) + (dB * uovr + eB * urvr))>>>BITS;
-//				final int G = ((cG * uovo + fG * urvo) + (dG * uovr + eG * urvr))>>>BITS;
-//				final int R = ((cR * uovo + fR * urvo) + (dR * uovr + eR * urvr))>>>BITS;
-//				final int A = ((cA * uovo + fA * urvo) + (dA * uovr + eA * urvr))>>>BITS;
-//				
-//				rgbArray[o] = (B<<0)|(G<<8)|(R<<16)|(A<<24);
-//				
-//				
-//				int B = 0, G = 0, R = 0, A = 0;
-//				B = (((c=pixels[O])&0xFF)*uovo+((r=pixels[O+1])&0xFF)*urvo+((e=pixels[O+1+scan])&0xFF)*urvr+((d=pixels[O+scan])&0xFF)*uovr)>>>BITS;
-//				G = (((c>>>=8)&0xFF)*uovo+((r>>>=8)&0xFF)*urvo+((e>>>=8)&0xFF)*urvr+((d>>>=8)&0xFF)*uovr)>>>BITS;
-//				R = (((c>>>=8)&0xFF)*uovo+((r>>>=8)&0xFF)*urvo+((e>>>=8)&0xFF)*urvr+((d>>>=8)&0xFF)*uovr)>>>BITS;
-//				A = (((c>>>=8)&0xFF)*uovo+((r>>>=8)&0xFF)*urvo+((e>>>=8)&0xFF)*urvr+((d>>>=8)&0xFF)*uovr)>>>BITS;
-//				
-//				rgbArray[o] = (B<<0)|(G<<8)|(R<<16)|(A<<24);
-//			}	
-		
+
+	////////////// Helpers
 	
 	public static void setYUV(int width, int height, int argb[], int offset, int scan, int Y[], int offsetY, int scanY, int U[], int offsetU, int scanU, int V[], int offsetV, int scanV) {
-		for (int y=0,o=offset, OY=offsetY, OU=offsetU, OV=offsetV, r = scan-width, RY = scanY-width, RU = scanU-width, RV = scanV-width;y<height;y++,o+=r, OY+=RY, OU+=RU, OV+=RV)
-			for (int x=0;x<width;x++,o++,OY++,OU++,OV++) {
-				
-				final int Y_ = Y[OY];
-				final int Cb = U[OU];
-				final int Cr = V[OV];
+		for (int y=0,r = scan-width, RY = scanY-width, RU = scanU-width, RV = scanV-width;y<height;y++,offset+=r, offsetY+=RY, offsetU+=RU, offsetV+=RV)
+			for (int x=0;x<width;x++,offset++,offsetY++,offsetU++,offsetV++) {
+				final int Y_ = Y[offsetY];
+				final int Cb = U[offsetU];
+				final int Cr = V[offsetV];
 				
 				final int red_ = (Y_+((1435*Cr)>>10)), red = red_<0?0:(red_>255?255:red_);
 				final int green_ = (Y_-((352*Cb+731*Cr)>>10)), green = green_<0?0:(green_>255?255:green_);
 				final int blue_ = (Y_+((1814*Cb)>>10)), blue = blue_<0?0:(blue_>255?255:blue_);
 				
-				argb[o] = 0xFF000000 | (red<<16) | (green<<8) | blue;
+				argb[offset] = 0xFF000000 | (red<<16) | (green<<8) | blue;
 			}
-		
 	}
 
 	public static void setLuma(int width, int height, int argb[], int offset, int scan, int Y[], int offsetY, int scanY) {
-		for (int y=0,o=offset, OY=offsetY, r = scan-width, RY = scanY-width;y<height;y++,o+=r, OY+=RY)
-			for (int x=0;x<width;x++,o++,OY++) {
-				final int Y_ = Y[OY];
-				
-				final int absed = Y_<0?(-Y_)&0xFF:Y_;
+		for (int y=0, r = scan-width, RY = scanY-width;y<height;y++,offset+=r, offsetY+=RY)
+			for (int x=0;x<width;x++,offset++,offsetY++) {
+				final int Y_ = Y[offsetY];
 				final int clamped = Y_<0?0:(Y_>0xFF?0xFF:Y_);
-				
-				argb[o] = 0xFF000000 | (clamped<<16) | (clamped<<8) | absed;
+				argb[offset] = 0xFF000000 | (clamped<<16) | (clamped<<8) | clamped;
 			}
 	}
-
 
 }
 

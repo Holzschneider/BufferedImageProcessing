@@ -7,7 +7,7 @@ public class GradientBufferedImage extends YUVBufferedImage {
 		super(width, height);
 	}
 	
-	public GradientBufferedImage extract(int toX, int toY, int width, int height, IntBufferedImage from, int fromX, int fromY, SeparableKernel filter) {
+	public GradientBufferedImage extract(int toX, int toY, int width, int height, IntArrayImage from, int fromX, int fromY, SeparableKernel filter) {
 		
 		filter.norm(1).convolve(U, toX, toY, from, fromX, fromY, width, height, 1, 0);
 		filter.norm(filter.norm*filter.norm).convolve(Y, toX, toY, U, toX, toY, width, height, 0, 1);
@@ -18,7 +18,7 @@ public class GradientBufferedImage extends YUVBufferedImage {
 		return this;
 	}
 	
-	public GradientBufferedImage extract(int toX, int toY, int width, int height, IntBufferedImage from, int fromX, int fromY, int R) {
+	public GradientBufferedImage extract(int toX, int toY, int width, int height, IntArrayImage from, int fromX, int fromY, int R) {
 		
 		BoxFilter.HORIZONTAL.convolve(U, toX, toY, from, fromX, fromY, width, height, R, 1);
 		BoxFilter.VERTICAL.convolve(Y, toX, toY, U, toX, toY, width, height, R, (R*2+1)*(R*2+1));

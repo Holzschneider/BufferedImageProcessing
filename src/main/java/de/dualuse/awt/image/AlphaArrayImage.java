@@ -8,7 +8,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 
 
-public class AlphaBufferedImage extends IntBufferedImage {
+public class AlphaArrayImage extends IntArrayImage {
 
 	static class AlphaColorSpace extends ColorSpace {
 		final float[] toRGB;
@@ -22,9 +22,9 @@ public class AlphaBufferedImage extends IntBufferedImage {
 		public float[] toRGB(float[] colorvalue) { 
 			return toRGB;//REF_COLOR_SPACE.toRGB(colorvalue); 
 		}
-		public float[] toCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.toCIEXYZ(colorvalue); }
-		public float[] fromRGB(float[] rgbvalue) { return REF_COLOR_SPACE.fromRGB(rgbvalue); } 
-		public float[] fromCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.fromCIEXYZ(colorvalue); }
+		public float[] toCIEXYZ(float[] colorvalue) { return RGB_COLOR_SPACE.toCIEXYZ(colorvalue); }
+		public float[] fromRGB(float[] rgbvalue) { return RGB_COLOR_SPACE.fromRGB(rgbvalue); }
+		public float[] fromCIEXYZ(float[] colorvalue) { return RGB_COLOR_SPACE.fromCIEXYZ(colorvalue); }
 		
 	}
 	
@@ -35,14 +35,13 @@ public class AlphaBufferedImage extends IntBufferedImage {
 		}
 		
 		public int getRGB(Object inData) {
-			int[] rgb = (int[])inData;
+			int[] value = (int[])inData;
 			
-			final int raw = rgb[0];
+			final int raw = value[0];
 			final int clamped = raw<0?0:(raw>0xFF?0xFF:raw);
 			
-			rgb[0] = clamped;
-//			final int gray = raw&0xFF;//getRed(rgb); //rgb[0];
-			
+			value[0] = clamped;
+
 			return (clamped << 24) | 0xFFFFFF; 
 		}
 	}
@@ -56,9 +55,9 @@ public class AlphaBufferedImage extends IntBufferedImage {
 		public float[] toRGB(float[] colorvalue) { 
 			return new float[] { 1, 1, 1 };//REF_COLOR_SPACE.toRGB(colorvalue); 
 		}
-		public float[] toCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.toCIEXYZ(colorvalue); }
-		public float[] fromRGB(float[] rgbvalue) { return REF_COLOR_SPACE.fromRGB(rgbvalue); } 
-		public float[] fromCIEXYZ(float[] colorvalue) { return REF_COLOR_SPACE.fromCIEXYZ(colorvalue); }
+		public float[] toCIEXYZ(float[] colorvalue) { return RGB_COLOR_SPACE.toCIEXYZ(colorvalue); }
+		public float[] fromRGB(float[] rgbvalue) { return RGB_COLOR_SPACE.fromRGB(rgbvalue); }
+		public float[] fromCIEXYZ(float[] colorvalue) { return RGB_COLOR_SPACE.fromCIEXYZ(colorvalue); }
 	};
 	
 	static ColorModel A_COLOR_MODEL = new ComponentColorModel(A_COLOR_SPACE, true, false, Transparency.TRANSLUCENT, DataBuffer.TYPE_INT) {
@@ -83,33 +82,31 @@ public class AlphaBufferedImage extends IntBufferedImage {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	
-	public AlphaBufferedImage(IntBufferedImage copy) {
-		super(copy.width,copy.height,set( new int[copy.width*copy.height], 0, copy.width, copy.width, copy.height, copy.data, copy.offset, copy.scan),0,copy.width);
+	public AlphaArrayImage(IntArrayImage wrap) {
+		super(wrap.width,wrap.height,wrap.values,wrap.offset,wrap.scan);
 	}
 
-	public AlphaBufferedImage(int width, int height, int [] data, int offset, int scan) {
+	public AlphaArrayImage(int width, int height, int [] data, int offset, int scan) {
 		super(width, height, data, offset, scan, A_COLOR_MODEL);
 	}
 	
-	public AlphaBufferedImage(int width, int height, int [] data, int offset, int scan, int rgb) {
+	public AlphaArrayImage(int width, int height, int [] data, int offset, int scan, int rgb) {
 		this(width,height, data, offset, scan, ((rgb>>>16)&0xFF)/255f, ((rgb>>>8)&0xFF)/255f, ((rgb>>>0)&0xFF)/255f);
 	}
 	
-	public AlphaBufferedImage(int width, int height, int [] data, int offset, int scan, float r, float g, float b) {
+	public AlphaArrayImage(int width, int height, int [] data, int offset, int scan, float r, float g, float b) {
 		super(width, height, data, offset, scan, new AlphaColorModel(r, g, b));
 	}
 	
-	public AlphaBufferedImage(int width, int height) {
+	public AlphaArrayImage(int width, int height) {
 		super(width, height, new int[width*height], 0, width, A_COLOR_MODEL);
 	}
 	
-	private AlphaBufferedImage(int width, int height, int[] alpha, int offset, int scan, ColorModel cm, WritableRaster raster) {
+	private AlphaArrayImage(int width, int height, int[] alpha, int offset, int scan, ColorModel cm, WritableRaster raster) {
 		super(width,height, offset, scan, cm, raster);
 	}
 	
-	public AlphaBufferedImage getSubimage(int x, int y, int w, int h) {
-		return new AlphaBufferedImage(w, h, data, x+y*scan, scan, A_COLOR_MODEL, getRaster().createWritableChild(x, y, w, h, 0, 0, null));
-	}
+	public AlphaArrayImage crop(int x, int y, int w, int h) { return new AlphaArrayImage(w, h, values, x+y*scan, scan); }
 	
 	public int[] getRGB(double startX, double startY, int w, int h, int[] rgbArray, int off, int scansize) {
 		final int sx = (int) startX, sy = (int) startY;
@@ -120,16 +117,13 @@ public class AlphaBufferedImage extends IntBufferedImage {
 		
 		for (int j=0,o=off,O=this.offset+sx+sy*this.scan,P=scan-w,p=scansize-w;j<h;j++,O+=P,o+=p) 
 			for (int i=0,q;i<w;i++,o++,O++) { 
-				int l = ((((data[q=O])*uovo+(data[q+=1])*urvo+(data[q+=scan])*urvr+(data[q-=1])*uovr)>>>8));
+				int l = ((((values[q=O])*uovo+(values[q+=1])*urvo+(values[q+=scan])*urvr+(values[q-=1])*uovr)>>>8));
 				l=l>255?255:(l<0?0:l);
 				rgbArray[o] = (l<<24) | 0xFFFFFF;
 			}
 		
 		return rgbArray;
 	}
-	
-	
-
 
 }
 

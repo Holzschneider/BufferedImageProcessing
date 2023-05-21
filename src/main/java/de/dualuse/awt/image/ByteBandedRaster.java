@@ -1,21 +1,14 @@
 package de.dualuse.awt.image;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.image.BandedSampleModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferFloat;
-import java.awt.image.Raster;
-import java.awt.image.RasterFormatException;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
+import java.awt.*;
+import java.awt.image.*;
 
 
-public class FloatBandedRaster extends WritableRaster {
+public class ByteBandedRaster extends WritableRaster {
 
     int[]         dataOffsets;
     int           scanlineStride;
-    float[][]      data;
+    byte[][]      data;
 
     private int maxX;
     private int maxY;
@@ -29,7 +22,7 @@ public class FloatBandedRaster extends WritableRaster {
      *  @param sampleModel     The SampleModel that specifies the layout.
      *  @param origin          The Point that specifies the origin.
      */
-    public FloatBandedRaster(SampleModel sampleModel, Point origin) {
+    public ByteBandedRaster(SampleModel sampleModel, Point origin) {
         this(sampleModel,
              sampleModel.createDataBuffer(),
              new Rectangle(origin.x,
@@ -50,9 +43,9 @@ public class FloatBandedRaster extends WritableRaster {
      *  @param dataBuffer      The DataBufferShort that contains the image data.
      *  @param origin          The Point that specifies the origin.
      */
-    public FloatBandedRaster(SampleModel sampleModel,
-                   DataBuffer dataBuffer,
-                   Point origin) {
+    public ByteBandedRaster(SampleModel sampleModel,
+                            DataBuffer dataBuffer,
+                            Point origin) {
         this(sampleModel, dataBuffer,
          new Rectangle(origin.x , origin.y,
                sampleModel.getWidth(),
@@ -78,21 +71,21 @@ public class FloatBandedRaster extends WritableRaster {
      *  @param origin          The Point that specifies the origin.
      *  @param parent          The parent (if any) of this raster.
      */
-    public FloatBandedRaster(SampleModel sampleModel,
+    public ByteBandedRaster(SampleModel sampleModel,
                             DataBuffer dataBuffer,
                             Rectangle aRegion,
                             Point origin,
-                            FloatBandedRaster parent) {
+                            ByteBandedRaster parent) {
 
         super(sampleModel, dataBuffer, aRegion, origin, parent);
         this.maxX = minX + width;
         this.maxY = minY + height;
 
-        if (!(dataBuffer instanceof DataBufferFloat)) {
-           throw new RasterFormatException("FloatBandedRaster must have float DataBuffers");
+        if (!(dataBuffer instanceof DataBufferByte)) {
+           throw new RasterFormatException("ByteBandedRaster must have byte DataBuffers");
         }
         
-        DataBufferFloat dbi = (DataBufferFloat)dataBuffer;
+        DataBufferByte dbi = (DataBufferByte)dataBuffer;
 
         if (sampleModel instanceof BandedSampleModel) {
             BandedSampleModel bsm = (BandedSampleModel)sampleModel;
@@ -101,7 +94,7 @@ public class FloatBandedRaster extends WritableRaster {
             int bandOffsets[] = bsm.getBandOffsets();
             int dOffsets[] = dbi.getOffsets();
             dataOffsets = new int[bankIndices.length];
-            data = new float[bankIndices.length][];
+            data = new byte[bankIndices.length][];
             int xOffset = aRegion.x - origin.x;
             int yOffset = aRegion.y - origin.y;
             for (int i = 0; i < bankIndices.length; i++) {
@@ -110,7 +103,7 @@ public class FloatBandedRaster extends WritableRaster {
                    xOffset + yOffset*scanlineStride + bandOffsets[i];
             }
         } else {
-            throw new RasterFormatException("FloatBandedRasters must have BandedSampleModels");
+            throw new RasterFormatException("ByteBandedRaster must have BandedSampleModels");
         }
         verify(false);
     }
@@ -126,10 +119,10 @@ public class FloatBandedRaster extends WritableRaster {
     }
 
     /**
-     * Returns data offset for the specified band.  The data offset
+     * Returns data offset for the specified band. The data offset
      * is the index into the band's data array
      * in which the first sample of the first scanline is stored.
-     * @param The band whose offset is returned.
+     * @param band whose offset is returned.
      */
     public int getDataOffset(int band) {
         return dataOffsets[band];
@@ -155,14 +148,14 @@ public class FloatBandedRaster extends WritableRaster {
     /**
      * Returns a reference to the entire data array.
      */
-    public float[][] getDataStorage() {
+    public byte[][] getDataStorage() {
         return data;
     }
 
     /**
      * Returns a reference to the specific band data array.
      */
-    public float[] getDataStorage(int band) {
+    public byte[] getDataStorage(int band) {
         return data[band];
     }
 
@@ -175,7 +168,7 @@ public class FloatBandedRaster extends WritableRaster {
      * and references anything other than an array of transferType.
      * @param x        The X coordinate of the pixel location.
      * @param y        The Y coordinate of the pixel location.
-     * @param outData  An object reference to an array of type defined by
+     * @param obj      An object reference to an array of type defined by
      *                 getTransferType() and length getNumDataElements().
      *                 If null an array of appropriate type and size will be
      *                 allocated.
@@ -188,12 +181,12 @@ public class FloatBandedRaster extends WritableRaster {
             throw new ArrayIndexOutOfBoundsException
                 ("Coordinate out of bounds!");
         }
-        float outData[];
-        if (obj == null) {
-            outData = new float[numDataElements];
-        } else {
-            outData = (float[])obj;
-        }
+        byte outData[];
+        if (obj == null)
+            outData = new byte[numDataElements];
+        else
+            outData = (byte[])obj;
+
         int off = (y-minY)*scanlineStride + (x-minX);
 
         for (int band = 0; band < numDataElements; band++) {
@@ -222,34 +215,35 @@ public class FloatBandedRaster extends WritableRaster {
      * @param y        The Y coordinate of the upper left pixel location.
      * @param width    Width of the pixel rectangle.
      * @param height   Height of the pixel rectangle.
-     * @param outData  An object reference to an array of type defined by
+     * @param obj      An object reference to an array of type defined by
      *                 getTransferType() and length w*h*getNumDataElements().
      *                 If null an array of appropriate type and size will be
      *                 allocated.
      * @return         An object reference to an array of type defined by
      *                 getTransferType() with the request pixel data.
      */
-    public Object getDataElements(int x, int y, int w, int h, Object obj) {
+    public Object getDataElements(int x, int y, int width, int height, Object obj) {
         if ((x < this.minX) || (y < this.minY) ||
-            (x + w > this.maxX) || (y + h > this.maxY)) {
+            (x + width > this.maxX) || (y + height > this.maxY)) {
             throw new ArrayIndexOutOfBoundsException
                 ("Coordinate out of bounds!");
         }
-        float  outData[];
-        if (obj == null) outData = new float[numDataElements*w*h];
-        else outData = (float[])obj;
+
+        byte[] outData;
+        if (obj != null) outData = (byte[])obj;
+        else outData = new byte[numDataElements*width*height];
         
         int yoff = (y-minY)*scanlineStride + (x-minX);
 
         for (int c = 0; c < numDataElements; c++) {
             int off = c;
-            float[] bank = data[c];
+            byte[] bank = data[c];
             int dataOffset = dataOffsets[c];
 
             int yoff2 = yoff;
-            for (int ystart=0; ystart < h; ystart++, yoff2 += scanlineStride) {
+            for (int ystart=0; ystart < height; ystart++, yoff2 += scanlineStride) {
                 int xoff = dataOffset + yoff2;
-                for (int xstart=0; xstart < w; xstart++) {
+                for (int xstart=0; xstart < width; xstart++) {
                     outData[off] = bank[xoff++];
                     off += numDataElements;
                 }
@@ -266,7 +260,7 @@ public class FloatBandedRaster extends WritableRaster {
      * and references anything other than an array of transferType.
      * @param x        The X coordinate of the pixel location.
      * @param y        The Y coordinate of the pixel location.
-     * @param inData   An object reference to an array of type defined by
+     * @param obj      An object reference to an array of type defined by
      *                 getTransferType() and length getNumDataElements()
      *                 containing the pixel data to place at x,y.
      */
@@ -276,7 +270,7 @@ public class FloatBandedRaster extends WritableRaster {
             throw new ArrayIndexOutOfBoundsException
                 ("Coordinate out of bounds!");
         }
-        float inData[] = (float[])obj;
+        byte inData[] = (byte[])obj;
         int off = (y-minY)*scanlineStride + (x-minX);
         for (int i = 0; i < numDataElements; i++) {
             data[i][dataOffsets[i] + off] = inData[i];
@@ -359,7 +353,7 @@ public class FloatBandedRaster extends WritableRaster {
      * @param y        The Y coordinate of the upper left pixel location.
      * @param w        Width of the pixel rectangle.
      * @param h        Height of the pixel rectangle.
-     * @param obj   An object reference to an array of type defined by
+     * @param obj      An object reference to an array of type defined by
      *                 getTransferType() and length w*h*getNumDataElements()
      *                 containing the pixel data to place between x,y and
      *                 x+h, y+h.
@@ -370,12 +364,12 @@ public class FloatBandedRaster extends WritableRaster {
             throw new ArrayIndexOutOfBoundsException
                 ("Coordinate out of bounds!");
         }
-        float inData[] = (float[])obj;
+        byte inData[] = (byte[])obj;
         int yoff = (y-minY)*scanlineStride + (x-minX);
 
         for (int c = 0; c < numDataElements; c++) {
             int off = c;
-            float[] bank = data[c];
+            byte[] bank = data[c];
             int dataOffset = dataOffsets[c];
 
             int yoff2 = yoff;
@@ -393,40 +387,27 @@ public class FloatBandedRaster extends WritableRaster {
     public WritableRaster createWritableChild (int x, int y,
                                                int width, int height,
                                                int x0, int y0,
-                                               int bandList[]) {
+                                               int[] bandList) {
 
-        if (x < this.minX) {
-            throw new RasterFormatException("x lies outside raster");
-        }
-        if (y < this.minY) {
-            throw new RasterFormatException("y lies outside raster");
-        }
-        if ((x+width < x) || (x+width > this.width + this.minX)) {
-            throw new RasterFormatException("(x + width) is outside raster") ;
-        }
-        if ((y+height < y) || (y+height > this.height + this.minY)) {
-            throw new RasterFormatException("(y + height) is outside raster");
-        }
+        if (x < this.minX) throw new RasterFormatException("x lies outside raster");
+        if (y < this.minY) throw new RasterFormatException("y lies outside raster");
+        if ((x+width < x) || (x+width > this.width + this.minX)) throw new RasterFormatException("(x + width) is outside raster");
+        if ((y+height < y) || (y+height > this.height + this.minY)) throw new RasterFormatException("(y + height) is outside raster");
 
-//        SampleModel sm;
-//
-//        if (bandList != null)
-//            sm = sampleModel.createSubsetSampleModel(bandList);
-//        else
-//            sm = sampleModel;
-//
-//        int deltaX = x0 - x;
-//        int deltaY = y0 - y;
+        int deltaX = x0 - x;
+        int deltaY = y0 - y;
 
+        SampleModel sm;
+        if (bandList == null) sm = sampleModel;
+        else sm = sampleModel.createSubsetSampleModel(bandList);
 
-//        return new FloatBandedRaster(sm,
-//                                    dataBuffer,
-//                                    new Rectangle(x0,y0,width,height),
-//                                    new Point(sampleModelTranslateX+deltaX,
-//                                              sampleModelTranslateY+deltaY),
-//                                    this);
-        
-        return null;
+        return new ByteBandedRaster(
+                sm,
+                dataBuffer,
+                new Rectangle(x0,y0,width,height),
+                new Point(sampleModelTranslateX+deltaX, sampleModelTranslateY+deltaY),
+                this
+        );
     }
 
     /**
@@ -467,7 +448,7 @@ public class FloatBandedRaster extends WritableRaster {
 
         SampleModel sm = sampleModel.createCompatibleSampleModel(w,h);
 
-        return new FloatBandedRaster(sm, new Point(0,0));
+        return new ByteBandedRaster(sm, new Point(0,0));
     }
 
     /**

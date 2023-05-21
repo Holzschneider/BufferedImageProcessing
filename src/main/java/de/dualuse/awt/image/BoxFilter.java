@@ -5,7 +5,7 @@ public enum BoxFilter {
 	VERTICAL;
 	
 	@SuppressWarnings("hiding")
-	public<IntBufferedImage extends de.dualuse.awt.image.IntBufferedImage> IntBufferedImage convolve( 
+	public<IntBufferedImage extends IntArrayImage> IntBufferedImage convolve(
 			IntBufferedImage to, int toX, int toY,  
 			IntBufferedImage from, int fromX, int fromY, 
 			
@@ -14,8 +14,8 @@ public enum BoxFilter {
 	{
 		
 		convolve(
-				to.data, to.offset+toX+toY*to.scan, to.scan, 
-				from.data, from.offset+fromX+fromY*from.scan, from.scan, 
+				to.values, to.offset+toX+toY*to.scan, to.scan,
+				from.values, from.offset+fromX+fromY*from.scan, from.scan,
 				
 				width, height, boxRadius, norm);
 		
@@ -23,15 +23,15 @@ public enum BoxFilter {
 	}
 	
 	@SuppressWarnings("hiding")
-	public<FloatBufferedImage extends de.dualuse.awt.image.FloatBufferedImage> FloatBufferedImage convolve( 
+	public<FloatBufferedImage extends FloatArrayImage> FloatBufferedImage convolve(
 			FloatBufferedImage to, int toX, int toY,  
 			FloatBufferedImage from, int fromX, int fromY, 
 			
 			int width, int height, int boxRadius, int norm) 
 	{
 		convolve(
-				to.data, to.offset+toX+toY*to.scan, to.scan, 
-				from.data, from.offset+fromX+fromY*from.scan, from.scan, 
+				to.values, to.offset+toX+toY*to.scan, to.scan,
+				from.values, from.offset+fromX+fromY*from.scan, from.scan,
 				width, height, boxRadius, norm);
 		
 		return to;

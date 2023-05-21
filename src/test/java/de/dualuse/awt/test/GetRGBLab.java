@@ -1,4 +1,6 @@
-package de.dualuse.awt.image;
+package de.dualuse.awt.test;
+
+import de.dualuse.awt.image.PixelArrayImage;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -8,9 +10,9 @@ import java.io.InputStream;
 
 public class GetRGBLab {
     public static void main(String... args) throws IOException {
-		final InputStream source = PixelBufferedImage.class.getResourceAsStream("IMG_3697.jpg");
-        final PixelBufferedImage test = PixelBufferedImage.read(source).getSubimage(1500,1400,512,512);
-        final PixelBufferedImage toast = new PixelBufferedImage(256,256, PixelBufferedImage.Format.RGB);
+		final InputStream source = PixelArrayImage.class.getResourceAsStream("IMG_3697.jpg");
+        final PixelArrayImage test = PixelArrayImage.read(source).crop(1500,1400,512,512);
+        final PixelArrayImage toast = new PixelArrayImage(256,256, PixelArrayImage.Format.RGB);
 
         JFrame f = new JFrame();
         f.setBounds(100,100,500,400);

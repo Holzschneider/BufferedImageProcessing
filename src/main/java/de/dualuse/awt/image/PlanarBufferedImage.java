@@ -3,12 +3,13 @@ package de.dualuse.awt.image;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
-public class PlanarBufferedImage extends CustomBufferedImage {
+abstract public class PlanarBufferedImage extends CustomBufferedImage {
 
 	public PlanarBufferedImage(int width, int height, int offset, int scan, ColorModel cm, WritableRaster raster, boolean isRasterPremultiplied) {
 		super(width, height, offset, scan, cm, raster, isRasterPremultiplied);
 	}
-	
+
+
 }
 
 //package de.dualuse.common.awt.image;

@@ -57,26 +57,26 @@ public class RGBBufferedImage extends IntPlanesBufferedImage {
 		};
 	};
 	
-	public final IntBufferedImage R;
-	public final IntBufferedImage G;
-	public final IntBufferedImage B;
+	public final IntArrayImage R;
+	public final IntArrayImage G;
+	public final IntArrayImage B;
 	
 	
-	public RGBBufferedImage(PixelBufferedImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
+	public RGBBufferedImage(PixelArrayImage pbi) { this(pbi.width,pbi.height); this.set(0, 0, pbi.width, pbi.height, pbi, 0, 0); }
 	public RGBBufferedImage(int width, int height) {
 		this(width, height, new int[width*height], new int[width*height], new int[width*height], 0, 0, 0, width);
 	}
 	
-	public RGBBufferedImage(int width, int height, IntBufferedImage r, IntBufferedImage g, IntBufferedImage b) {
-		this(width, height, r.data, g.data, b.data, r.offset, g.offset, b.offset, r.scan);
+	public RGBBufferedImage(int width, int height, IntArrayImage r, IntArrayImage g, IntArrayImage b) {
+		this(width, height, r.values, g.values, b.values, r.offset, g.offset, b.offset, r.scan);
 	}
 
 	public RGBBufferedImage(int width, int height, int[] rPlane, int[] gPlane, int[] bPlane, int offsetR, int offsetG, int offsetB, int scan) {
 		super(width, height, new int[][] { rPlane, gPlane, bPlane }, new int[] { offsetR, offsetG, offsetB }, scan, RGB_COLOR_MODEL);
 		
-		R = new IntBufferedImage(width, height, rPlane, offsetR, scan, R_COLOR_MODEL);
-		G = new IntBufferedImage(width, height, gPlane, offsetG, scan, G_COLOR_MODEL);
-		B = new IntBufferedImage(width, height, bPlane, offsetB, scan, B_COLOR_MODEL);
+		R = new IntArrayImage(width, height, rPlane, offsetR, scan, R_COLOR_MODEL);
+		G = new IntArrayImage(width, height, gPlane, offsetG, scan, G_COLOR_MODEL);
+		B = new IntArrayImage(width, height, bPlane, offsetB, scan, B_COLOR_MODEL);
 	}
 	
 	
@@ -89,10 +89,10 @@ public class RGBBufferedImage extends IntPlanesBufferedImage {
 		
 		final int xi = (int)x, yi = (int)y;
 		int o = xi+yi*scan;
-		final int ul = 0xFF000000|(R.data[o]<<16)|(G.data[o]<<8)|B.data[o];
-		final int ur = 0xFF000000|(R.data[++o]<<16)|(G.data[o]<<8)|B.data[o];
-		final int lr = 0xFF000000|(R.data[o+=scan]<<16)|(G.data[o]<<8)|B.data[o];
-		final int ll = 0xFF000000|(R.data[--o]<<16)|(G.data[o]<<8)|B.data[o];
+		final int ul = 0xFF000000|(R.values[o]<<16)|(G.values[o]<<8)|B.values[o];
+		final int ur = 0xFF000000|(R.values[++o]<<16)|(G.values[o]<<8)|B.values[o];
+		final int lr = 0xFF000000|(R.values[o+=scan]<<16)|(G.values[o]<<8)|B.values[o];
+		final int ll = 0xFF000000|(R.values[--o]<<16)|(G.values[o]<<8)|B.values[o];
 		
 		final int ulB = (ul>>>0)&0xFF, urB = (ur>>>0)&0xFF, lrB = (lr>>>0)&0xFF, llB = (ll>>>0)&0xFF;
 		final int ulG = (ul>>>8)&0xFF, urG = (ur>>>8)&0xFF, lrG = (lr>>>8)&0xFF, llG = (ll>>>8)&0xFF;
@@ -110,7 +110,7 @@ public class RGBBufferedImage extends IntPlanesBufferedImage {
 	}
 	
 	
-	public RGBBufferedImage set(int toX, int toY, int width, int height, PixelBufferedImage pbi, int fromX, int fromY) {
+	public RGBBufferedImage set(int toX, int toY, int width, int height, PixelArrayImage pbi, int fromX, int fromY) {
 		for (int y=0,o=pbi.offset, OY=toX+toY*this.B.scan+this.B.offset, OU=toX+toY*this.G.scan+this.G.offset, OV=toX+toY*this.R.scan+this.R.offset, r = pbi.scan-width, R = this.B.scan-width;y<height;y++,o+=r, OY+=R, OU+=R, OV+=R)
 			for (int x=0;x<pbi.width;x++,o++,OY++,OU++,OV++) {
 				final int ARGB = pbi.pixels[o];
@@ -118,9 +118,9 @@ public class RGBBufferedImage extends IntPlanesBufferedImage {
 				final int green = (ARGB>>8)&0xFF;
 				final int blue = (ARGB>>0)&0xFF;
 				
-				this.R.data[OV] = (int)red;
-				this.B.data[OY] = (int)blue;
-				this.G.data[OU] = (int)green;
+				this.R.values[OV] = (int)red;
+				this.B.values[OY] = (int)blue;
+				this.G.values[OU] = (int)green;
 			}
 		
 		return this;
